@@ -62,6 +62,9 @@ export function initMotion(): void {
     resume();
   }).catch((error: unknown) => console.error('Motion intro failed after scrolling was restored.', error));
 
+  // The pinned ministry ledger is created first (and refreshes first): every trigger below it must
+  // account for the pin spacer, and ScrollTrigger only does that for triggers refreshed after the pin.
+  ministryTrack();
   progress();
   rail();
   headings();
@@ -70,7 +73,6 @@ export function initMotion(): void {
   numerals();
   educationTimeline();
   steps();
-  ministryTrack();
   counters();
   if (document.readyState === 'complete') ScrollTrigger.refresh();
   else window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
@@ -227,6 +229,7 @@ function ministryTrack() {
         start: 'top top',
         end: () => `+=${distance() * 1.15}`,
         pin: true,
+        refreshPriority: 1,
         scrub: 0.6,
         anticipatePin: 1,
         invalidateOnRefresh: true,

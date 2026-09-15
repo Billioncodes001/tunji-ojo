@@ -97,7 +97,7 @@ const chrome = () => `
 const hero = () => `
   <section class="hero" id="hero" data-chapter>
     <div class="hero__crest" data-hero-crest>
-      <img src="/images/coat-of-arms.svg" alt="Coat of arms of the Federal Republic of Nigeria" width="46" height="40" />
+      <img src="/images/coat-of-arms.png" alt="Coat of arms of the Federal Republic of Nigeria" width="46" height="40" />
       <span>Federal Republic of Nigeria<br />Federal Ministry of Interior</span>
     </div>
     <div class="hero__copy">
@@ -287,7 +287,7 @@ const letterS = () => {
   <section class="chapter" id="letter" data-chapter>
     ${head('letter')}
     <div class="letter__frame" data-reveal>
-      <img class="letter__crest" src="/images/coat-of-arms.svg" alt="" aria-hidden="true" />
+      <img class="letter__crest" src="/images/coat-of-arms.png" alt="" aria-hidden="true" />
       <p class="letter__to">${esc(letter.addressedTo)}</p>
       ${has
         ? `<div class="letter__body">${letter.paragraphs.map((p) => `<p>${esc(p)}</p>`).join('')}</div>
@@ -320,7 +320,7 @@ const sourcesS = () => {
 
 const footer = () => `
   <footer class="footer">
-    <div class="footer__brand"><img src="/images/coat-of-arms.svg" alt="" aria-hidden="true" /><span>Dr. Olubunmi Tunji-Ojo · Minister of Interior</span></div>
+    <div class="footer__brand"><img src="/images/coat-of-arms.png" alt="" aria-hidden="true" /><span>Dr. Olubunmi Tunji-Ojo · Minister of Interior</span></div>
     <span>Prepared as a companion to a vote of confidence · ${new Date().getFullYear()}</span>
   </footer>`;
 

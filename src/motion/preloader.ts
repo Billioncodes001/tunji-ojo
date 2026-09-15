@@ -50,7 +50,10 @@ export async function runPreloader(): Promise<void> {
         .to(el, { clipPath: 'inset(0 0 100% 0)', duration: 1.0, ease: 'expo.inOut' }, '-=0.25');
     }), ceiling]);
   } catch (error: unknown) {
-    console.error('Preloader failed; revealing the page.', error);
+    // A stalled ticker in a background tab is expected, not a fault; only a real asset failure is worth an error.
+    const stalled = document.hidden || (error instanceof Error && error.message.includes('ceiling'));
+    if (stalled) console.info('Preloader cut short; revealing the page.');
+    else console.error('Preloader failed; revealing the page.', error);
   } finally {
     clearTimeout(ceilingTimer);
     clearTimeout(minimumTimer);

@@ -21,7 +21,7 @@ export const imageCredits: ImageCredit[] = [
   { file: '/images/tinubu-portrait.jpg', description: 'President Bola Ahmed Tinubu', credit: 'State House, Abuja', source: 'https://statehouse.gov.ng/' },
   { file: '/images/ondo-map.jpg', description: 'Ondo State within Nigeria', credit: 'Profoss, CC BY-SA 3.0', source: 'https://commons.wikimedia.org/wiki/File:Nigeria_-_Ondo.svg' },
   { file: '/images/ondo-seal.png', description: 'Seal of Ondo State', credit: 'Government of Ondo State, public domain', source: 'https://commons.wikimedia.org/wiki/File:Seal_of_Ondo_State.png' },
-  { file: '/images/coat-of-arms.svg', description: 'Coat of arms of Nigeria', credit: 'Lumia1234, CC BY-SA 3.0', source: 'https://commons.wikimedia.org/wiki/File:Coat_of_arms_of_Nigeria.svg' },
+  { file: '/images/coat-of-arms.png', description: 'Coat of arms of Nigeria', credit: 'Lumia1234, CC BY-SA 3.0', source: 'https://commons.wikimedia.org/wiki/File:Coat_of_arms_of_Nigeria.svg' },
   { file: '/images/nis-logo.png', description: 'Nigeria Immigration Service crest', credit: 'Nigeria Immigration Service', source: 'https://immigration.gov.ng/' },
   { file: '/images/nscdc-logo.png', description: 'NSCDC crest', credit: 'Nigeria Security and Civil Defence Corps', source: 'https://nscdc.gov.ng/' },
   { file: '/images/ministry-logo.png', description: 'Federal Ministry of Interior emblem', credit: 'Federal Ministry of Interior', source: 'https://interior.gov.ng/' },
