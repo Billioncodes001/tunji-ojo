@@ -1,0 +1,28 @@
+import type { ImageCredit } from './types';
+
+export const imageCredits: ImageCredit[] = [
+  { file: '/images/hero-portrait.jpg', description: 'Dr. Olubunmi Tunji-Ojo, London, 6 November 2024', credit: 'UK Home Office / Rav Soodi, CC BY 2.0', source: 'https://commons.wikimedia.org/wiki/File:Home_Secretary_Yvette_Cooper_meets_Nigerian_Interior_Minister_-_54123049373.jpg' },
+  { file: '/images/portrait-crop.jpg', description: 'Portrait, 2024', credit: 'UK Home Office / Rav Soodi, CC BY 2.0', source: 'https://commons.wikimedia.org/wiki/File:Olubunmi_Tunji-Ojo_(2024)_(cropped).jpg' },
+  { file: '/images/official-portrait.jpg', description: 'Official portrait with the national flag and coat of arms', credit: 'Official portrait, via Blueprint', source: 'https://blueprint.ng/as-interior-minister-hits-the-ground-running/' },
+  { file: '/images/at-desk-2023.jpg', description: 'At his desk during his inaugural week, September 2023', credit: 'Vanguard', source: 'https://www.vanguardngr.com/2023/09/olubunmi-tunji-ojos-inaugural-week-a-glimpse-into-his-commitment-to-interior-ministry-transformation/' },
+  { file: '/images/house-of-reps.jpg', description: 'Leaving the House of Representatives with fellow lawmakers', credit: 'Federal Ministry of Interior', source: 'https://interior.gov.ng/' },
+  { file: '/images/podium-speech.jpg', description: 'Addressing a launch event', credit: 'bto.ng', source: 'https://bto.ng/' },
+  { file: '/images/uk-bilateral.jpg', description: 'Bilateral meeting with the UK Home Secretary, London, November 2024', credit: 'UK Home Office / Rav Soodi, CC BY 2.0', source: 'https://commons.wikimedia.org/wiki/File:Home_Secretary_Yvette_Cooper_meets_Nigerian_Interior_Minister_-_54121926597.jpg' },
+  { file: '/images/sectoral-retreat-2026.jpg', description: 'With agency heads at the 2026 sectoral retreat', credit: 'Federal Ministry of Interior', source: 'https://interior.gov.ng/tunji-ojo-emphasises-accountability-reforms-and-measurable-impact/' },
+  { file: '/images/vanguard-award.jpg', description: 'Receiving the Vanguard Personality of the Year award', credit: 'bto.ng / Vanguard', source: 'https://bto.ng/' },
+  { file: '/images/leadership-plaque-2025.jpg', description: 'Receiving a leadership plaque, 2025', credit: 'Federal Ministry of Interior', source: 'https://interior.gov.ng/tunji-ojo-harps-on-effective-leadership-for-national-development/' },
+  { file: '/images/nameplate.jpg', description: 'Speaking behind the Ministry of Interior nameplate', credit: 'Nigerian Tribune', source: 'https://tribuneonlineng.com/interior-minister-unveils-digital-reforms-as-689-immigration-cadets-graduate-in-kano/' },
+  { file: '/images/e-gates-lagos.jpg', description: 'E-gates at Murtala Muhammed International Airport, Lagos', credit: 'BusinessDay', source: 'https://businessday.ng/aviation/article/fg-installs-egates-at-lagos-airport-gives-timeline-for-other-airports/' },
+  { file: '/images/epassport.jpg', description: 'Nigerian enhanced e-passport', credit: 'Albert_ECI, CC BY-SA 4.0', source: 'https://commons.wikimedia.org/wiki/File:Nigerian_Enhanced_ePassport.webp' },
+  { file: '/images/nis-hq.jpg', description: 'Nigeria Immigration Service headquarters, Abuja', credit: 'Nigeria Immigration Service', source: 'https://immigration.gov.ng/' },
+  { file: '/images/kuje-custodial.jpg', description: 'Medium Security Custodial Centre, Kuje', credit: 'PRNigeria', source: 'https://prnigeria.com/2026/07/21/african-correctional-chiefs/' },
+  { file: '/images/nscdc-salute.jpg', description: 'Commandant-General, NSCDC', credit: 'Nigeria Security and Civil Defence Corps', source: 'https://nscdc.gov.ng/' },
+  { file: '/images/fire-station.jpg', description: 'Federal Fire Service station, Ojuelegba, Lagos', credit: 'Omoeko Media, CC BY-SA 4.0', source: 'https://commons.wikimedia.org/wiki/File:Federal_fire_service,_Ojuelegba,_Lagos.jpg' },
+  { file: '/images/tinubu-portrait.jpg', description: 'President Bola Ahmed Tinubu', credit: 'State House, Abuja', source: 'https://statehouse.gov.ng/' },
+  { file: '/images/ondo-map.jpg', description: 'Ondo State within Nigeria', credit: 'Profoss, CC BY-SA 3.0', source: 'https://commons.wikimedia.org/wiki/File:Nigeria_-_Ondo.svg' },
+  { file: '/images/ondo-seal.png', description: 'Seal of Ondo State', credit: 'Government of Ondo State, public domain', source: 'https://commons.wikimedia.org/wiki/File:Seal_of_Ondo_State.png' },
+  { file: '/images/coat-of-arms.svg', description: 'Coat of arms of Nigeria', credit: 'Lumia1234, CC BY-SA 3.0', source: 'https://commons.wikimedia.org/wiki/File:Coat_of_arms_of_Nigeria.svg' },
+  { file: '/images/nis-logo.png', description: 'Nigeria Immigration Service crest', credit: 'Nigeria Immigration Service', source: 'https://immigration.gov.ng/' },
+  { file: '/images/nscdc-logo.png', description: 'NSCDC crest', credit: 'Nigeria Security and Civil Defence Corps', source: 'https://nscdc.gov.ng/' },
+  { file: '/images/ministry-logo.png', description: 'Federal Ministry of Interior emblem', credit: 'Federal Ministry of Interior', source: 'https://interior.gov.ng/' },
+];
