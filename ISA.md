@@ -5,10 +5,10 @@ project: olubunmiOjo
 effort: advanced
 effort_source: classifier
 phase: complete
-progress: 52/52
+progress: 57/57
 mode: interactive
 started: 2026-09-15T09:20:00-07:00
-updated: 2026-09-15T13:55:00-07:00
+updated: 2026-09-15T14:50:00-07:00
 ---
 
 ## Problem
@@ -135,6 +135,14 @@ Ship a static Vite/TypeScript site in this directory that presents Dr. Olubunmi 
 - [x] ISC-50: An "In the News" chapter renders every post published on bto.ng (four at research time, all 25 Jun 2024), newest first, each linking to its bto.ng URL, plus the site’s core values and profile lines (probe: DOM count `#news a[href^="https://bto.ng"]` ≥ 4).
 - [x] ISC-51: `bun run build` exits 0 after the additions; check-sources covers news items (each has a `source` URL).
 - [x] ISC-52: Screenshots of the letter and news chapters at 1440 and 390 saved under `research/screenshots/` (probe: `ls`).
+
+### Iteration 3 — live deployment
+
+- [x] ISC-53: Repository `Billioncodes001/tunji-ojo` exists on GitHub with `main` pushed (probe: `gh repo view`).
+- [x] ISC-54: `.github/workflows/deploy.yml` builds with bun (`SITE_BASE=/tunji-ojo/`) and deploys via `actions/deploy-pages` (probe: Read + run conclusion success).
+- [x] ISC-55: All asset references are base-aware — no `src="/images` in `dist/index.html` when built with the sub-path base (probe: `rg`).
+- [x] ISC-56: `https://billioncodes001.github.io/tunji-ojo/` returns HTTP 200 with the page title, and the hero portrait URL returns 200 (probe: `curl -I`).
+- [x] ISC-57: Headless Chrome screenshot of the live URL shows the hero rendered (probe: `research/screenshots/live-hero-1440.png`).
 
 ## Test Strategy
 
@@ -289,3 +297,10 @@ Ship a static Vite/TypeScript site in this directory that presents Dr. Olubunmi 
 - ISC-49: live DOM — `a[href*="x.com/BTOofficial"][rel~="noopener"]` = 2 (footer Connect + values panel); mailto:contact@bto.ng alongside.
 - ISC-50: live DOM — `#news a[href^="https://bto.ng"]` = 5 (four posts + site link); `.values__list li` = 6; rail and sections now 14 in order with `news` before `letter`.
 - ISC-51: `bun run build` → "✓ 102 facts and 24 image credits all carry a source URL … ✓ built". ISC-52: r-news-1440.png, r-news-390.png, r-letter-*.png saved.
+- 2026-09-15 14:30: Iteration 3 — "deploy it to a live domain". No Cloudflare/Vercel/Netlify credentials on this machine; GitHub (`Billioncodes001`) is authenticated, so the site deploys to GitHub Pages as a project site. Custom-domain attachment needs a domain name from Josiah (CNAME + `public/CNAME`), so it is left as the follow-up rather than guessed.
+- 2026-09-15 14:30: Project-site sub-path (`/tunji-ojo/`) required base-aware asset URLs; content keeps `/images/…` strings and the renderer prefixes Vite's `BASE_URL` at emission time, so local dev (`/`) and Pages (`/tunji-ojo/`) both work from one content model.
+- ISC-53: `gh repo create Billioncodes001/tunji-ojo --public` → https://github.com/Billioncodes001/tunji-ojo; `git push -u origin main` → new branch main.
+- ISC-54: run 34984750346 "Deploy to GitHub Pages" → build: success, deploy: success (`gh run view`).
+- ISC-55: `SITE_BASE=/tunji-ojo/ bun run build` → `rg 'src="/images' dist/index.html` = 0; served HTML has 0 absolute `/images` refs; hrefs are `/tunji-ojo/…`.
+- ISC-56: `curl -IL` → 200 for `/tunji-ojo/`, `/images/hero-portrait.jpg`, `/images/coat-of-arms.png`, `/images/e-gates-lagos.jpg`, index JS and CSS; `<title>` matches.
+- ISC-57: `research/screenshots/live-hero-1440.png` and `live-hero-390.png` captured from the live URL in headless Chrome.

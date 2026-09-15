@@ -34,3 +34,17 @@ bun run preview    # serve the production build
 ## Accessibility
 
 `prefers-reduced-motion: reduce` disables smooth scrolling and all scroll animations; the page renders fully static. Native scrolling is never blocked.
+
+## Deployment
+
+The site deploys to GitHub Pages on every push to `main` via `.github/workflows/deploy.yml` (bun install → `bun run build` with `SITE_BASE=/tunji-ojo/` → `actions/deploy-pages`).
+
+Live: https://billioncodes001.github.io/tunji-ojo/
+
+Asset paths are base-aware: content stores `/images/…` and `src/render.ts` prefixes Vite's `BASE_URL`, so local dev serves from `/` and Pages from `/tunji-ojo/`.
+
+### Custom domain
+
+1. In the domain's DNS, add a `CNAME` record for the chosen host (e.g. `www`) pointing to `billioncodes001.github.io`; for an apex domain add the four GitHub Pages A records.
+2. Add a file `public/CNAME` containing the host name and change `SITE_BASE` in the workflow to `/`.
+3. In the repository's Pages settings, enter the custom domain and enable "Enforce HTTPS".
