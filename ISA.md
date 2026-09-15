@@ -5,10 +5,10 @@ project: olubunmiOjo
 effort: advanced
 effort_source: classifier
 phase: complete
-progress: 44/44
+progress: 52/52
 mode: interactive
 started: 2026-09-15T09:20:00-07:00
-updated: 2026-09-15T12:30:00-07:00
+updated: 2026-09-15T13:55:00-07:00
 ---
 
 ## Problem
@@ -124,6 +124,17 @@ Ship a static Vite/TypeScript site in this directory that presents Dr. Olubunmi 
 - [x] ISC-42: Interceptor screenshots of hero, education, ministry, numbers, and sources sections saved under `research/screenshots/` (probe: `ls`).
 - [x] ISC-43: A `README.md` documents how to run, build, update content, and add images.
 - [x] ISC-44: Anti: no remote image URLs in `src/` or `dist/` HTML (probe: `rg 'src="http' src/ dist/` returns 0).
+
+### Iteration 2 — bto.ng details, socials, news; letter summary
+
+- [x] ISC-45: `research/bto-ng.md` exists with social URLs, site structure and ≥15 dated news items with URLs (probe: Read + `rg -c "https://bto.ng/20" research/bto-ng.md`).
+- [x] ISC-46: `src/content/letter.ts` carries the NANS Southwest Zone D letter: summary paragraphs, cited figures, verbatim resolution, signatory "Comr. Adeyemo Josiah Kayode (BILLIONCODES)" (probe: `rg`).
+- [x] ISC-47: Chapter XI renders the summary, the four cited figures, the resolution pull-quote and the signatory, with the full letter in a collapsible block (probe: DOM count `.letter__cites div` = 4, `.letter__full` present).
+- [x] ISC-48: Anti: the summary contains no claim absent from the letter (probe: each summary sentence traced to a letter paragraph).
+- [x] ISC-49: A "Connect" block renders the official social links from bto.ng (≥1, X/Twitter at minimum) with `rel="noopener noreferrer"` (probe: DOM `a[href*="x.com/BTOofficial"]`).
+- [x] ISC-50: An "In the News" chapter renders every post published on bto.ng (four at research time, all 25 Jun 2024), newest first, each linking to its bto.ng URL, plus the site’s core values and profile lines (probe: DOM count `#news a[href^="https://bto.ng"]` ≥ 4).
+- [x] ISC-51: `bun run build` exits 0 after the additions; check-sources covers news items (each has a `source` URL).
+- [x] ISC-52: Screenshots of the letter and news chapters at 1440 and 390 saved under `research/screenshots/` (probe: `ls`).
 
 ## Test Strategy
 
@@ -267,3 +278,14 @@ Ship a static Vite/TypeScript site in this directory that presents Dr. Olubunmi 
 - ISC-39: live pane screenshot after intro shows portrait fully revealed with heading (word transforms at 0, figure clip-path `inset(0 0 0%)`). ISC-40: sections lacking `.eyebrow` → []. ISC-41: sections lacking a visual element → only prologue, which carries the `.glance` grid (refined, see Decisions).
 - ISC-42: `research/screenshots/` — hero-1440, r-prologue/education/legislator/call/ministry/numbers/words/letter/sources-1440, r-education-390, r-ministry-390, r-numbers-768, hero-no-webgl-1440, preloader-1440. ISC-43: README.md documents run/build/content/images. ISC-44: `rg 'src="http' src dist` → 0.
 - ISC-24/29 (addendum, 1440×900 live tab): `.pin-spacer` present (height 7328px), track scrollWidth 7030, pin element top = 0 while pinned with track `translate3d(-2198px…)` and agency opacities 1/1/1/0.64/0.35/0.35 mid-track; rail active = ministry during the pin after the refreshPriority fix.
+- 2026-09-15 13:10: Iteration 2 requested by Josiah — more details, socials and news from https://bto.ng, and a summary of his NANS Southwest Zone D vote-of-confidence letter (now supplied). ISCs 45–52 appended; IDs 1–44 untouched.
+- 2026-09-15 13:10: The letter's figures (25m students, 200 students equipped) are the authors' own claims; they render inside the letter chapter attributed to NANS Southwest Zone D, not as site facts, so they do not enter `allFacts()`.
+- 2026-09-15 13:40: refined: ISC-50 lowered from "≥12 news items" to "every post on bto.ng" — the official site holds exactly four posts (REST `X-WP-Total: 4`), all dated 25 June 2024, with nothing since; the site itself points readers to X for more. Padding the chapter from other outlets would misrepresent "news on bto.ng".
+- 2026-09-15 13:40: Facebook handle `OlubunmiTunjiOjoBTO` appears on bto.ng but its link is broken there and the page could not be verified (Facebook returns HTTP 400 to fetches). Only X @BTOofficial and contact@bto.ng are rendered.
+- ISC-45: Read — `research/bto-ng.md` (socials, /about profile, core values, all four posts with ISO dates and URLs, eight quotes, site structure; `/rep` app down with HTTP 500).
+- ISC-46: `rg "Adeyemo Josiah Kayode|resolution:|cites:" src/content/letter.ts` → present; summary (3 paragraphs), cites (4), verbatim resolution, full text (15 paragraphs).
+- ISC-47: live DOM — `.letter__cites div` = 4, `.letter__full` present, signatory "Comr. Adeyemo Josiah Kayode (BILLIONCODES)"; screenshots r-letter-1440.png, r-letter2-1440.png, r-letter-390.png.
+- ISC-48: each summary sentence traced: 25m students/six states → ¶2; "not on political sentiment…" → ¶1; "beyond administrative routine…" → ¶3; 204,000 in ~2.5 weeks → ¶4; contactless/automation/e-gates → ¶5; 4,000 inmates → ¶6; Students to CEO 2.0, 200 students, 10 institutions, equipment → ¶7–8; vote + courtesy visit + partnership areas → resolution ¶ and ¶13.
+- ISC-49: live DOM — `a[href*="x.com/BTOofficial"][rel~="noopener"]` = 2 (footer Connect + values panel); mailto:contact@bto.ng alongside.
+- ISC-50: live DOM — `#news a[href^="https://bto.ng"]` = 5 (four posts + site link); `.values__list li` = 6; rail and sections now 14 in order with `news` before `letter`.
+- ISC-51: `bun run build` → "✓ 102 facts and 24 image credits all carry a source URL … ✓ built". ISC-52: r-news-1440.png, r-news-390.png, r-letter-*.png saved.

@@ -1,6 +1,6 @@
 import {
   profile, identity, prologue, education, professional, legislator, constituency, callToServe,
-  ministryGroups, stats, recognition, quotes, letter, imageCredits,
+  ministryGroups, stats, recognition, quotes, letter, imageCredits, news, socials, officialSite, coreValues, siteProfile,
 } from './content';
 import type { Fact, Entry } from './content';
 
@@ -40,8 +40,9 @@ export const chapters: Chapter[] = [
   { id: 'numbers', label: 'Numbers', numeral: 'VIII', span: 'The record, measured', title: 'By the <em>numbers.</em>' },
   { id: 'recognition', label: 'Honours', numeral: 'IX', span: '2019 — 2026', title: '<em>Recognition.</em>' },
   { id: 'words', label: 'In His Words', numeral: 'X', span: 'Verbatim, sourced', title: 'In his <em>own words.</em>' },
-  { id: 'letter', label: 'The Letter', numeral: 'XI', span: 'A vote of confidence', title: 'A vote of <em>confidence.</em>' },
-  { id: 'sources', label: 'Sources', numeral: 'XII', span: 'Every claim, traced', title: 'Sources & <em>credits.</em>' },
+  { id: 'news', label: 'In the News', numeral: 'XI', span: 'From the official site', title: 'In the <em>news.</em>' },
+  { id: 'letter', label: 'The Letter', numeral: 'XII', span: 'A vote of confidence', title: 'A vote of <em>confidence.</em>' },
+  { id: 'sources', label: 'Sources', numeral: 'XIII', span: 'Every claim, traced', title: 'Sources & <em>credits.</em>' },
 ];
 const ch = (id: string) => chapters.find((c) => c.id === id)!;
 
@@ -281,21 +282,78 @@ const wordsS = () => `
     </div>
   </section>`;
 
-const letterS = () => {
-  const has = letter.paragraphs.length > 0;
-  return `
+const letterS = () => `
   <section class="chapter" id="letter" data-chapter>
-    ${head('letter')}
-    <div class="letter__frame" data-reveal>
-      <img class="letter__crest" src="/images/coat-of-arms.png" alt="" aria-hidden="true" />
-      <p class="letter__to">${esc(letter.addressedTo)}</p>
-      ${has
-        ? `<div class="letter__body">${letter.paragraphs.map((p) => `<p>${esc(p)}</p>`).join('')}</div>
-           <div class="letter__sign"><b>${esc(letter.signatory)}</b><span>${esc(letter.signatoryTitle)}${letter.dated ? ` · ${esc(letter.dated)}` : ''}</span></div>`
-        : `<p class="letter__reserved">This chapter is reserved for the author’s letter of confidence. Its words are the author’s own and are added from <code>src/content/letter.ts</code>; nothing here is written on their behalf.</p>`}
+    ${head('letter', `The letter that occasioned this record, from the ${esc(letter.from)}, summarised in its own terms. The full text follows.`)}
+    <div class="letter">
+      <article class="letter__frame" data-reveal>
+        <img class="letter__crest" src="/images/coat-of-arms.png" alt="" aria-hidden="true" />
+        <p class="eyebrow">From ${esc(letter.fromShort)}${letter.dated ? ` · ${esc(letter.dated)}` : ''}</p>
+        <p class="letter__to">${esc(letter.addressedTo)}</p>
+        <h3 class="letter__subject">${esc(letter.subject)}</h3>
+        <div class="letter__body">${letter.summary.map((p) => `<p>${esc(p)}</p>`).join('')}</div>
+        <dl class="letter__cites" data-reveal-group>
+          ${letter.cites.map((c) => `<div data-reveal><dt>${esc(c.figure)}</dt><dd>${esc(c.label)}</dd></div>`).join('')}
+        </dl>
+        <blockquote class="letter__resolution"><p>${esc(letter.resolution)}</p></blockquote>
+        <div class="letter__sign">
+          <span class="letter__closing">${esc(letter.closing)}</span>
+          <b>${esc(letter.signatory)}</b>
+          <span>${esc(letter.signatoryTitle)}</span>
+        </div>
+      </article>
+      <details class="letter__full">
+        <summary><span>Read the full letter</span></summary>
+        <div class="letter__fulltext">
+          ${letter.fullText.map((p) => (p === p.toUpperCase() && p.length < 80 ? `<h4>${esc(p)}</h4>` : `<p>${esc(p)}</p>`)).join('')}
+          <p class="letter__fullsign">${esc(letter.closing)}<br /><b>${esc(letter.signatory)}</b><br />${esc(letter.signatoryTitle)}</p>
+        </div>
+      </details>
+    </div>
+  </section>`;
+
+const newsS = () => {
+  if (!news.length) return '';
+  const sorted = [...news].sort((a, b) => (a.date < b.date ? 1 : -1));
+  const fmt = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+  return `
+  <section class="chapter" id="news" data-chapter>
+    ${head('news', `Dispatches published on the Minister’s official site, <a class="inline" href="${officialSite.url}" target="_blank" rel="noopener noreferrer">${esc(officialSite.name)}</a>, newest first.`)}
+    <div class="news__grid">
+      <ol class="news" data-reveal-group>
+        ${sorted.map((n) => `
+          <li class="news__item" data-reveal>
+            <time class="news__date" datetime="${esc(n.date)}">${esc(fmt(n.date))}</time>
+            <div>
+              <a class="news__title" href="${n.source}" target="_blank" rel="noopener noreferrer">${esc(n.text)}</a>
+              ${n.excerpt ? `<p class="news__excerpt">${esc(n.excerpt)}${cite(n, 'news')}</p>` : ''}
+              ${n.category ? `<span class="news__cat">${esc(n.category)}</span>` : ''}
+            </div>
+          </li>`).join('')}
+      </ol>
+      <aside class="values" data-reveal>
+        <p class="eyebrow">Core values, as he lists them</p>
+        <ol class="values__list">${coreValues.text.split(' · ').map((v) => `<li>${esc(v)}</li>`).join('')}</ol>
+        <p class="small">${cite(coreValues, 'news')} bto.ng/about</p>
+        <div class="values__profile">${siteProfile.map((f) => `<p>${esc(f.text)}${cite(f, 'news')}</p>`).join('')}</div>
+        <div class="values__follow">
+          ${socials.map((s) => `<a href="${s.url}" target="_blank" rel="noopener noreferrer"><b>${esc(s.network)}</b> ${esc(s.handle)}</a>`).join('')}
+        </div>
+      </aside>
     </div>
   </section>`;
 };
+
+const connect = () => {
+  if (!socials.length) return '';
+  return `
+    <div class="connect">
+      <span class="connect__label">Connect</span>
+      ${socials.map((s) => `<a class="connect__link" href="${s.url}" target="_blank" rel="noopener noreferrer"><b>${esc(s.network)}</b><span>${esc(s.handle)}</span></a>`).join('')}
+      <a class="connect__link" href="${officialSite.url}" target="_blank" rel="noopener noreferrer"><b>Official site</b><span>${esc(officialSite.name)}</span></a>
+    </div>`;
+};
+
 
 const sourcesS = () => {
   const groups = chapters.filter((c) => registry.some((r) => r.chapter === c.id));
@@ -320,6 +378,7 @@ const sourcesS = () => {
 
 const footer = () => `
   <footer class="footer">
+    ${connect()}
     <div class="footer__brand"><img src="/images/coat-of-arms.png" alt="" aria-hidden="true" /><span>Dr. Olubunmi Tunji-Ojo · Minister of Interior</span></div>
     <span>Prepared as a companion to a vote of confidence · ${new Date().getFullYear()}</span>
   </footer>`;
@@ -327,6 +386,6 @@ const footer = () => `
 export function renderApp(): string {
   registry.length = 0;
   // Order matters: cite() numbers sources in reading order, and sourcesS() must run last.
-  const body = [hero(), prologueS(), originsS(), educationS(), professionalS(), legislatorS(), callS(), ministryS(), numbersS(), recognitionS(), wordsS(), letterS()].join('');
+  const body = [hero(), prologueS(), originsS(), educationS(), professionalS(), legislatorS(), callS(), ministryS(), numbersS(), recognitionS(), wordsS(), newsS(), letterS()].join('');
   return '<a class="skip-link" href="#main">Skip to main content</a>' + loader() + chrome() + '<main id="main" tabindex="-1">' + body + sourcesS() + '</main>' + footer();
 }
