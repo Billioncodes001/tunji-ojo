@@ -3,6 +3,7 @@ import {
   ministryGroups, stats, recognition, quotes, letter, imageCredits, news, socials, officialSite, coreValues, siteProfile,
 } from './content';
 import type { Fact, Entry } from './content';
+import { imageSizes } from './content/imageSizes';
 
 /* ── Source registry: every cited fact gets a footnote number, listed in the Sources chapter ── */
 interface Src { url: string; label: string; chapter: string }
@@ -22,10 +23,11 @@ function cite(f: Fact, chapter: string): string {
     registry.push({ url: f.source, label, chapter });
     i = registry.length - 1;
   }
-  return `<sup class="fn"><a href="#src-${i + 1}" aria-label="Source ${i + 1}: ${esc(registry[i].label)}">${i + 1}</a></sup>`;
+  return `<sup class="fn"><a href="#src-${i + 1}" title="${esc(registry[i].label)}" aria-label="Source ${i + 1}: ${esc(registry[i].label)}">${i + 1}</a></sup>`;
 }
 // Public assets are stored as '/images/…' in content; prefix with Vite's base so the site works on a sub-path.
 const asset = (p: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}${p}`;
+const dims = (src: string) => { const d = imageSizes[src]; return d ? `width="${d[0]}" height="${d[1]}"` : ''; };
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] as string));
 
 /* ── Chapter table (drives the rail, numerals and the sources grouping) ── */
@@ -62,7 +64,7 @@ function head(id: string, lede?: string): string {
 function figure(src: string, alt: string, cls = 'figure--wide', cap = '', eager = false): string {
   return `
     <figure class="figure ${cls}" data-figure>
-      <img src="${asset(src)}" alt="${esc(alt)}" ${eager ? 'fetchpriority="high"' : 'loading="lazy" decoding="async"'} />
+      <img src="${asset(src)}" ${dims(src)} alt="${esc(alt)}" ${eager ? 'fetchpriority="high"' : 'loading="lazy" decoding="async"'} />
       <span class="figure__frame" aria-hidden="true"></span>
       ${cap ? `<figcaption class="figure__cap">${esc(cap)}</figcaption>` : ''}
     </figure>`;
@@ -92,6 +94,14 @@ const loader = () => `
 
 const chrome = () => `
   <div class="progress" aria-hidden="true"><i></i></div>
+  <div class="chapmenu-wrap">
+    <button class="chapmenu__btn" type="button" data-chapmenu-toggle aria-expanded="false" aria-controls="chapmenu"><span class="chapmenu__dot"></span><span data-chapmenu-label>Chapters</span></button>
+    <nav class="chapmenu" id="chapmenu" data-chapmenu hidden aria-label="Chapters">
+      <ol>
+        ${chapters.map((c) => `<li><a href="#${c.id}" data-chap="${c.id}"><b>${c.numeral || '—'}</b><span>${esc(c.label)}</span></a></li>`).join('')}
+      </ol>
+    </nav>
+  </div>
   <nav class="rail" aria-label="Chapters">
     ${chapters.map((c) => `<a class="rail__item" href="#${c.id}" data-rail="${c.id}"><span class="rail__dot"></span><span class="rail__label">${esc(c.label)}</span></a>`).join('')}
   </nav>
@@ -116,7 +126,7 @@ const hero = () => `
       </dl>
     </div>
     <figure class="hero__figure" data-hero-figure>
-      <img src="${asset('/images/hero-portrait.jpg')}" alt="Dr. Olubunmi Tunji-Ojo, Minister of Interior, photographed in London in November 2024" fetchpriority="high" />
+      <img src="${asset('/images/hero-portrait.jpg')}" ${dims('/images/hero-portrait.jpg')} alt="Dr. Olubunmi Tunji-Ojo, Minister of Interior, photographed in London in November 2024" fetchpriority="high" />
       <span class="figure__frame" aria-hidden="true"></span>
     </figure>
     <div class="hero__scroll" data-hero-fade><i></i><span>Scroll to read</span></div>
@@ -226,9 +236,9 @@ const ministryS = () => `
           <h3 class="agency__name">Portfolios under the Interior</h3>
           <p>The Ministry supervises the Nigeria Immigration Service, the Nigerian Correctional Service, the Nigeria Security and Civil Defence Corps and the Federal Fire Service, alongside citizenship, marriage and business-permit administration.</p>
           <div class="agency__logos">
-            <img src="${asset('/images/ministry-logo.png')}" alt="Federal Ministry of Interior emblem" loading="lazy" />
-            <img src="${asset('/images/nis-logo.png')}" alt="Nigeria Immigration Service crest" loading="lazy" />
-            <img src="${asset('/images/nscdc-logo.png')}" alt="Nigeria Security and Civil Defence Corps crest" loading="lazy" />
+            <img src="${asset('/images/ministry-logo.png')}" ${dims('/images/ministry-logo.png')} alt="Federal Ministry of Interior emblem" loading="lazy" />
+            <img src="${asset('/images/nis-logo.png')}" ${dims('/images/nis-logo.png')} alt="Nigeria Immigration Service crest" loading="lazy" />
+            <img src="${asset('/images/nscdc-logo.png')}" ${dims('/images/nscdc-logo.png')} alt="Nigeria Security and Civil Defence Corps crest" loading="lazy" />
           </div>
           <p class="small agency__cue">Scroll on →</p>
         </article>
@@ -289,7 +299,7 @@ const letterS = () => `
     ${head('letter', `The letter that occasioned this record, from the ${esc(letter.from)}, summarised in its own terms. The full text follows.`)}
     <div class="letter">
       <article class="letter__frame" data-reveal>
-        <img class="letter__crest" src="${asset('/images/coat-of-arms.png')}" alt="" aria-hidden="true" />
+        <img class="letter__crest" src="${asset('/images/coat-of-arms.png')}" ${dims('/images/coat-of-arms.png')} alt="" aria-hidden="true" />
         <p class="eyebrow">From ${esc(letter.fromShort)}${letter.dated ? ` · ${esc(letter.dated)}` : ''}</p>
         <p class="letter__to">${esc(letter.addressedTo)}</p>
         <h3 class="letter__subject">${esc(letter.subject)}</h3>
@@ -372,7 +382,7 @@ const sourcesS = () => {
     <div class="credits">
       <div class="sources__group"><h3>Image credits</h3></div>
       <ul>
-        ${imageCredits.map((c) => `<li><img src="${asset(c.file)}" alt="" loading="lazy" decoding="async" /><span>${esc(c.description)} — <a href="${c.source}" target="_blank" rel="noopener noreferrer">${esc(c.credit)}</a></span></li>`).join('')}
+        ${imageCredits.map((c) => `<li><img src="${asset(c.file)}" ${dims(c.file)} alt="" loading="lazy" decoding="async" /><span>${esc(c.description)} — <a href="${c.source}" target="_blank" rel="noopener noreferrer">${esc(c.credit)}</a></span></li>`).join('')}
       </ul>
     </div>
   </section>`;
@@ -381,7 +391,7 @@ const sourcesS = () => {
 const footer = () => `
   <footer class="footer">
     ${connect()}
-    <div class="footer__brand"><img src="${asset('/images/coat-of-arms.png')}" alt="" aria-hidden="true" /><span>Dr. Olubunmi Tunji-Ojo · Minister of Interior</span></div>
+    <div class="footer__brand"><img src="${asset('/images/coat-of-arms.png')}" ${dims('/images/coat-of-arms.png')} alt="" aria-hidden="true" /><span>Dr. Olubunmi Tunji-Ojo · Minister of Interior</span></div>
     <span>Prepared as a companion to a vote of confidence · ${new Date().getFullYear()}</span>
   </footer>`;
 

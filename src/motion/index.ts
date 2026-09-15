@@ -4,6 +4,7 @@ import Lenis from 'lenis';
 import { splitWords } from './split';
 import { runPreloader } from './preloader';
 import { chapters } from '../render';
+import { initChapterMenu, setActiveChapter } from '../chapmenu';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -64,6 +65,7 @@ export function initMotion(): void {
 
   // The pinned ministry ledger is created first (and refreshes first): every trigger below it must
   // account for the pin spacer, and ScrollTrigger only does that for triggers refreshed after the pin.
+  initChapterMenu((target) => lenis.scrollTo(target, { duration: 1.4, force: true, easing: (t) => 1 - Math.pow(1 - t, 4) }));
   ministryTrack();
   progress();
   rail();
@@ -100,9 +102,6 @@ function progress() {
 
 /* ── Rail + chapter tag: which chapter is under the reader ── */
 function rail() {
-  const items = $$('[data-rail]');
-  const tagNum = $('[data-tag-num]')!;
-  const tagLabel = $('[data-tag-label]')!;
   chapters.forEach((c) => {
     const section = document.getElementById(c.id);
     if (!section) return;
@@ -111,10 +110,7 @@ function rail() {
       start: 'top 50%',
       end: 'bottom 50%',
       onToggle: (self) => {
-        if (!self.isActive) return;
-        items.forEach((i) => i.classList.toggle('is-active', i.dataset.rail === c.id));
-        tagNum.textContent = c.numeral ? `Ch. ${c.numeral}` : '';
-        tagLabel.textContent = c.label;
+        if (self.isActive) setActiveChapter(c.id);
       },
     });
   });

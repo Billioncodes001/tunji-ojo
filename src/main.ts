@@ -5,8 +5,9 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/sections.css';
 import './styles/motion.css';
-import { chapters, renderApp } from './render';
+import { renderApp } from './render';
 import { initObsidian } from './gl/obsidian';
+import { initChapterMenu, setActiveChapter } from './chapmenu';
 
 const root = document.documentElement;
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -35,10 +36,8 @@ if (!reduced) {
 
 /* ── Static chapter tracking ── */
 function trackStaticChapters(): void {
-  const items = Array.from(document.querySelectorAll<HTMLElement>('[data-rail]'));
+  initChapterMenu((target) => target.scrollIntoView({ block: 'start' }));
   const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-chapter]'));
-  const tagNum = document.querySelector<HTMLElement>('[data-tag-num]');
-  const tagLabel = document.querySelector<HTMLElement>('[data-tag-label]');
   const update = (): void => {
     // Recompute on entry AND exit; nearest chapter wins in gaps and after large jumps.
     const centre = window.innerHeight / 2;
@@ -49,10 +48,7 @@ function trackStaticChapters(): void {
       const distance = Math.max(rect.top - centre, centre - rect.bottom, 0);
       if (distance < nearest) { active = section; nearest = distance; }
     });
-    const chapter = chapters.find((c) => c.id === active?.id);
-    items.forEach((item) => item.classList.toggle('is-active', item.dataset.rail === chapter?.id));
-    if (tagNum) tagNum.textContent = chapter?.numeral ? `Ch. ${chapter.numeral}` : '';
-    if (tagLabel) tagLabel.textContent = chapter?.label ?? '';
+    if (active) setActiveChapter(active.id);
   };
   let io: IntersectionObserver | undefined;
   const disconnect = (): void => io?.disconnect();

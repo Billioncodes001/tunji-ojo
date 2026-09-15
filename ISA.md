@@ -4,11 +4,11 @@ slug: 20260915-092000_tunji-ojo-showcase
 project: olubunmiOjo
 effort: advanced
 effort_source: classifier
-phase: complete
-progress: 57/57
+phase: execute
+progress: 57/70
 mode: interactive
 started: 2026-09-15T09:20:00-07:00
-updated: 2026-09-15T14:50:00-07:00
+updated: 2026-09-15T15:20:00-07:00
 ---
 
 ## Problem
@@ -143,6 +143,22 @@ Ship a static Vite/TypeScript site in this directory that presents Dr. Olubunmi 
 - [x] ISC-55: All asset references are base-aware — no `src="/images` in `dist/index.html` when built with the sub-path base (probe: `rg`).
 - [x] ISC-56: `https://billioncodes001.github.io/tunji-ojo/` returns HTTP 200 with the page title, and the hero portrait URL returns 200 (probe: `curl -I`).
 - [x] ISC-57: Headless Chrome screenshot of the live URL shows the hero rendered (probe: `research/screenshots/live-hero-1440.png`).
+
+### Iteration 4 — improve: weight, sharing, mobile navigation, credibility
+
+- [ ] ISC-58: `three` is no longer a dependency; `src/gl/obsidian.ts` uses raw WebGL and the largest JS chunk gzips ≤ 60 KB (probe: package.json + `bun run build` sizes).
+- [ ] ISC-59: The obsidian sheen still renders (probe: `research/screenshots/rawgl-hero-1440.png`) and the CSS fallback still appears with `--disable-webgl`.
+- [ ] ISC-60: `index.html` carries Open Graph + Twitter card tags (title, description, image, url, type) and a canonical link (probe: `rg`).
+- [ ] ISC-61: A 1200×630 share image exists at `public/images/share-card.jpg` ≤ 300 KB, generated from the site’s own hero (probe: `sips`, `du`).
+- [ ] ISC-62: JSON-LD `Person` schema for the Minister with `jobTitle`, `birthDate`, `alumniOf`, `sameAs` (X, bto.ng) is embedded (probe: `rg "application/ld+json"`).
+- [ ] ISC-63: On viewports ≤ 1000px a chapter button opens a chapter list that scrolls to any section; the list closes on selection and on Escape (probe: live DOM at 390px + JS click).
+- [ ] ISC-64: The active rail item and chapter-list item carry `aria-current="true"` (probe: DOM).
+- [ ] ISC-65: Every footnote link carries a `title` naming its source label, and a hover/focus popover shows the label (probe: DOM `sup.fn a[title]` count = footnote count).
+- [ ] ISC-66: A "Skip to content" link is the first focusable element (probe: DOM first `a`).
+- [ ] ISC-67: Lighthouse (desktop) on the live URL after deploy: Performance ≥ 90, Accessibility ≥ 95, Best Practices ≥ 95, SEO ≥ 95 (probe: `research/lighthouse/after.json`).
+- [ ] ISC-68: Lighthouse total byte weight after < before (probe: compare `total-byte-weight`).
+- [ ] ISC-69: Anti: no change to palette, typography or chapter structure (probe: tokens.css unchanged; section ids unchanged).
+- [ ] ISC-70: Deployed and re-verified live (probe: `gh run view` success + `curl -I` 200).
 
 ## Test Strategy
 
@@ -304,3 +320,4 @@ Ship a static Vite/TypeScript site in this directory that presents Dr. Olubunmi 
 - ISC-55: `SITE_BASE=/tunji-ojo/ bun run build` → `rg 'src="/images' dist/index.html` = 0; served HTML has 0 absolute `/images` refs; hrefs are `/tunji-ojo/…`.
 - ISC-56: `curl -IL` → 200 for `/tunji-ojo/`, `/images/hero-portrait.jpg`, `/images/coat-of-arms.png`, `/images/e-gates-lagos.jpg`, index JS and CSS; `<title>` matches.
 - ISC-57: `research/screenshots/live-hero-1440.png` and `live-hero-390.png` captured from the live URL in headless Chrome.
+- 2026-09-15 15:20: Iteration 4 — "improve". Chosen on evidence rather than taste: Three.js was the single largest bundle cost (128 KB gz for one quad); shared links had no preview card; the chapter rail — the device that keeps readers going — was invisible on phones; footnote numbers gave no source name until the end. Lighthouse before/after is the objective score. Redesign explicitly out of scope.

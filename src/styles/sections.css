@@ -210,7 +210,7 @@
 .credits { margin-top: 56px; }
 .credits li { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 0.84rem; color: var(--ink-2); align-items: center; }
 .credits img { width: 90px; height: 56px; object-fit: cover; filter: saturate(0.7); }
-.credits a { color: var(--ink-3); text-decoration: none; }
+.credits a { color: var(--ink-2); text-decoration: underline; text-decoration-color: var(--gold-dim); text-underline-offset: 3px; }
 .credits a:hover { color: var(--gold); }
 @media (max-width: 900px) { .sources__list { grid-template-columns: 1fr; } }
 
@@ -271,3 +271,20 @@ a.inline { color: var(--gold-2); text-decoration: none; border-bottom: 1px solid
 .values__follow a:hover { color: var(--ink); }
 @media (max-width: 900px) { .news__grid { grid-template-columns: 1fr; } }
 @media (max-width: 720px) { .letter__cites { grid-template-columns: 1fr 1fr; } }
+
+/* ───────────── Skip link, footnote popover, mobile chapter menu ───────────── */
+.fn { position: relative; }
+.fn a::after { content: attr(title); position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translate(-50%, 4px); white-space: nowrap; padding: 6px 10px; background: var(--bg-3); border: 1px solid var(--gold-dim); color: var(--ink); font-family: var(--sans); font-weight: 500; font-size: 0.68rem; letter-spacing: 0.04em; line-height: 1.3; opacity: 0; pointer-events: none; transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out); z-index: 5; }
+.fn a:hover::after, .fn a:focus-visible::after { opacity: 1; transform: translate(-50%, 0); }
+.chapmenu-wrap { display: none; }
+@media (max-width: 1000px) {
+  .chapmenu-wrap { display: block; position: fixed; left: 14px; bottom: 14px; z-index: 40; }
+  .chapmenu__btn { display: inline-flex; align-items: center; gap: 10px; padding: 12px 16px 12px 14px; background: rgba(10, 10, 10, 0.86); border: 1px solid var(--gold-dim); color: var(--ink); font-family: var(--sans); font-weight: 600; font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase; cursor: pointer; backdrop-filter: blur(6px); }
+  .chapmenu__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgba(31, 138, 76, 0.22); }
+  .chapmenu { position: absolute; left: 0; bottom: calc(100% + 10px); width: min(78vw, 320px); max-height: 70vh; overflow: auto; background: rgba(10, 10, 10, 0.96); border: 1px solid var(--gold-dim); backdrop-filter: blur(8px); }
+  .chapmenu ol { padding: 8px 0; }
+  .chapmenu a { display: grid; grid-template-columns: 44px 1fr; align-items: baseline; gap: 8px; padding: 11px 18px; text-decoration: none; color: var(--ink-2); font-family: var(--sans); font-weight: 600; font-size: 0.66rem; letter-spacing: 0.2em; text-transform: uppercase; border-left: 2px solid transparent; }
+  .chapmenu a b { font-family: var(--serif); font-weight: 300; font-size: 0.95rem; letter-spacing: 0; text-transform: none; color: var(--gold); }
+  .chapmenu a.is-active { color: var(--gold-2); border-left-color: var(--green); }
+  .chapter-tag { right: 14px; }
+}

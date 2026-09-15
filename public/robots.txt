@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://billioncodes001.github.io/tunji-ojo/sitemap.xml
