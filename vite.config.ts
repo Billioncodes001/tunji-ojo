@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  base: process.env.SITE_BASE ?? '/',
   build: {
     target: 'es2022',
     cssMinify: true,
