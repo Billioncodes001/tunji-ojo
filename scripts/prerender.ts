@@ -1,8 +1,10 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { pages, renderPage, esc } from "../src/editorial/render";
+import { channels } from "../src/editorial/channels";
+import { siteConfig } from "./site-config";
 const base = process.env.SITE_BASE ?? "/";
-const origin = process.env.SITE_ORIGIN ?? "https://billioncodes001.github.io";
-const productionBase = process.env.SITE_BASE ?? "/tunji-ojo/";
+const { origin, base: productionBase, url: siteUrl } = siteConfig();
+const assetBase = process.env.SITE_URL ? productionBase : base;
 const template = await readFile("dist/index.html", "utf8");
 for (const [route, title, description] of [
   ...pages,
@@ -19,7 +21,7 @@ for (const [route, title, description] of [
   let html = template
     .replace(
       '<div id="app"></div>',
-      () => `<div id="app">${renderPage(route, base)}</div>`,
+      () => `<div id="app">${renderPage(route, assetBase, siteUrl)}</div>`,
     )
     .replace(/<title>.*?<\/title>/, () => `<title>${esc(pageTitle)}</title>`)
     .replace(
@@ -37,8 +39,19 @@ for (const [route, title, description] of [
     .replace(
       /(<meta (?:property|name)="(?:og:title|twitter:title)" content=")[^"]*/g,
       (match) => match.replace(/content=".*/, 'content="' + esc(pageTitle)),
-    );
+    )
+    .replace(/(<meta (?:property|name)="(?:og:image|twitter:image)" content=")[^"]*/g,
+      (_match, prefix) => `${prefix}${siteUrl}images/share-card.jpg`)
+    .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/,
+      (script) => {
+        const person = JSON.parse(script.replace(/<[^>]+>/g, ""));
+        person.url = siteUrl;
+        person.image = `${siteUrl}images/optimized/official-portrait.webp`;
+        person.sameAs = ["https://bto.ng/", ...channels.map(c => c.url)];
+        return `<script type="application/ld+json">${JSON.stringify(person).replace(/</g, "\\u003c")}</script>`;
+      });
   if (route === "404") {
+    html = html.replace("</head>", '<meta name="robots" content="noindex, follow"></head>');
     await writeFile("dist/404.html", html);
     continue;
   }

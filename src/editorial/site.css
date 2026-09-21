@@ -1674,3 +1674,18 @@ dialog::backdrop {
     font-size: 10px;
   }
 }
+
+/* Public channels and contact directory. */
+[data-route="connect"] .page-heading h1 { font-size: clamp(44px, 9vw, 136px); }
+.connect-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.connect-card { display: flex; flex-direction: column; min-height: 310px; padding: 30px; border: 1px solid #ffffff30; transition: background .25s, border-color .25s; }
+.connect-card:hover, .connect-card:focus-visible { background: #ffffff08; border-color: #a1bea8; }
+.connect-card h2 { font-size: clamp(28px, 3vw, 44px); overflow-wrap: anywhere; line-height: 1.12; }
+.connect-card p { color: #b9bdb9; }
+.connect-card .text-link { margin-top: auto; padding-top: 24px; }
+.contact-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 80px; }
+.contact-grid h3 { margin-top: 32px; }
+@media (max-width: 850px) {
+  .connect-grid, .contact-grid { grid-template-columns: 1fr; gap: 24px; }
+  .connect-card { min-height: 250px; }
+}

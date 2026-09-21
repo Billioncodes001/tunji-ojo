@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { testBase, previewUrl } from "./site-settings";
 
 test("hero plays a short muted local film and respects pause through dialogs", async ({
   page,
@@ -18,7 +19,7 @@ test("hero plays a short muted local film and respects pause through dialogs", a
   expect(state).toMatchObject({ muted: true, loop: true, inline: true });
   expect(state.duration).toBeGreaterThan(5);
   expect(state.duration).toBeLessThan(10);
-  expect(state.src).toContain("/tunji-ojo/media/tunji-ojo-egates-loop.");
+  expect(state.src).toContain(`${testBase}media/tunji-ojo-egates-loop.`);
   const openPages = page.context().pages().length;
   await page.getByRole("link", { name: "Watch the full report" }).click();
   await expect(page.getByRole("dialog", { name: "At the border." })).toBeVisible();
@@ -80,7 +81,7 @@ test("reduced motion and Save-Data avoid video downloads until explicitly reques
     page.on("request", (r) => {
       if (r.url().includes("/media/")) requests.push(r.url());
     });
-    await page.goto("http://127.0.0.1:4175/tunji-ojo/");
+    await page.goto(previewUrl);
     const video = page.locator("[data-hero-video]");
     await expect(
       page.getByRole("button", { name: "Play background video", exact: true }),

@@ -19,6 +19,7 @@ import {
 } from "../content";
 import type { Fact, Entry } from "../content";
 import { photographs, films, photoById } from "./media";
+import { channels, officialContact } from "./channels";
 export const pages = [
   ["", "Home", "A life in service. A record in focus."],
   ["story", "The story", "From Akoko to the national stage."],
@@ -51,6 +52,7 @@ export const pages = [
   ["sources", "The source record", "Follow the evidence behind the story."],
   ["privacy", "Privacy", "A small site. A clear approach to privacy."],
   ["share", "Pass it on", "Share the documented record."],
+  ["connect", "Connect", "Social channels, official contacts and public services."],
 ] as const;
 export type PageKey = (typeof pages)[number][0];
 export const esc = (s: string) =>
@@ -61,7 +63,7 @@ export const esc = (s: string) =>
         c
       ]!,
   );
-export function renderPage(route: string, base: string) {
+export function renderPage(route: string, base: string, siteUrl = "https://billioncodes001.github.io/tunji-ojo/") {
   const url = (p = "") => `${base}${p ? p + "/" : ""}`;
   const img = (id: string, cls = "", eager = false) => {
     const p = photoById(id);
@@ -272,7 +274,7 @@ export function renderPage(route: string, base: string) {
           "A RECORD<br>YOU CAN FOLLOW.",
           "Every claim leads back to its source. Reporting dates describe the record; figures are not live service metrics.",
         ) +
-        `<section class="wrap reading bottom-space"><p class="editor-note">An independent profile, not a government service portal. Sources include official releases, original reporting and the attributed NANS letter. Media credits identify their publishers and do not imply endorsement.</p><h2>Claims & reporting</h2><div class="source-list">${allFacts()
+        `<section class="wrap reading bottom-space"><p class="editor-note">An independent profile, not a government service portal. Sources include official releases, original reporting and the attributed NANS letter. Media credits identify their publishers and do not imply endorsement.</p><h2>Public channels</h2><p>Profile links checked on 21 September 2026.</p>${channels.map(c => `<div class="fact"><h3>${c.name} / ${esc(c.handle)}</h3><a class="source" href="${c.evidence}" target="_blank" rel="noopener noreferrer">Profile reference ↗</a></div>`).join("")}<h2>Claims & reporting</h2><div class="source-list">${allFacts()
           .map(
             (f, i) =>
               `<article><span class="eyebrow">${String(i + 1).padStart(3, "0")}</span><div><p>${esc(f.text)}</p>${source(f)}</div></article>`,
@@ -290,6 +292,10 @@ export function renderPage(route: string, base: string) {
         ) +
         `<section class="wrap reading bottom-space"><h2>No accounts. No forms.</h2><p>This site does not ask you to create an account or submit personal details. It does not include advertising or analytics scripts, and it does not set application cookies.</p><h2>The background film</h2><p>The short, silent homepage film is served directly from this website. It does not connect to a video platform. Reduced-motion or data-saving preferences keep the still image until you choose to play.</p><h2>Full reports load when you choose.</h2><p>YouTube videos use the privacy-enhanced youtube-nocookie.com player. A connection to YouTube is made only when you open a film. Playback is then subject to YouTube’s privacy practices.</p><h2>Fonts and photographs</h2><p>Fonts and displayed photographs are served with this website. Opening a source link takes you to a separate publisher with its own privacy policy.</p><h2>Hosting</h2><p>The published site uses GitHub Pages. The hosting provider may process technical information such as IP addresses to deliver and secure the site.</p>${arrow("GitHub privacy statement", "https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement")}<h2>Sharing</h2><p>Copy buttons write the selected text to your clipboard when you choose to use them. Nothing is posted or sent automatically.</p></section>`;
       break;
+    case "connect":
+      content = head("15 / Stay connected", "THE CONVERSATION.<br>CONTINUES.", "Follow the public channels. Find the right place to get in touch.") +
+        `<section class="wrap bottom-space"><div class="connect-grid">${channels.map((c, i) => `<a class="connect-card reveal" href="${c.url}" target="_blank" rel="noopener noreferrer"><span class="eyebrow">0${i + 1} / ${c.name}</span><h2>${esc(c.handle)}</h2><p>${c.description}</p><span class="text-link">Visit ${c.name} <span aria-hidden="true">↗</span></span></a>`).join("")}</div></section><section class="paper section"><div class="wrap contact-grid"><div><p class="eyebrow">Official enquiries</p><h2 class="display">THE RIGHT<br>CONTACT.</h2><p class="lede">For correspondence, start with the official office.</p><p>Contact details and enquiry options are maintained on the official website.</p>${arrow("Contact the official office", officialContact)}</div><div><p class="eyebrow">Public services</p><h3>Ministry of Interior</h3><p>For ministry information and links to its agencies, visit the government website.</p>${arrow("Visit the Ministry", "https://interior.gov.ng/")}<h3>Nigeria Immigration Service</h3><p>For passport and immigration information, start with the Nigeria Immigration Service.</p>${arrow("Visit Immigration", "https://immigration.gov.ng/")}</div></div></section><section class="section wrap reading"><p class="eyebrow">About this website</p><h2>A documented public record.</h2><p>This is an independent profile. It does not receive official correspondence or process government-service applications. The links above take you to the relevant public channels.</p>${arrow("Explore the sources", url("sources"))}</section>`;
+      break;
     case "share":
       content =
         head(
@@ -297,7 +303,7 @@ export function renderPage(route: string, base: string) {
           "A STORY<br>WORTH READING.",
           "Send someone a starting point for their own exploration.",
         ) +
-        `<section class="wrap reading bottom-space"><p id="share-message" class="lede">Explore the documented life and public service of Olubunmi Tunji-Ojo — from Akoko to the Ministry of Interior. https://billioncodes001.github.io/tunji-ojo/</p><button class="text-link" data-copy="share-message">Copy message & link <span>↗</span></button>${arrow("Explore the story", url("story"))}</section>`;
+        `<section class="wrap reading bottom-space"><p id="share-message" class="lede">Explore the documented life and public service of Olubunmi Tunji-Ojo — from Akoko to the Ministry of Interior. ${esc(siteUrl)}</p><button class="text-link" data-copy="share-message">Copy message & link <span>↗</span></button>${arrow("Explore the story", url("story"))}</section>`;
       break;
     default:
       content =
@@ -319,7 +325,7 @@ export function renderPage(route: string, base: string) {
     .map(([p, t]) => `<a href="${url(p)}">${t}</a>`)
     .join(
       "",
-    )}<a href="https://bto.ng/" target="_blank" rel="noopener noreferrer">Official website ↗</a></div><div><p class="eyebrow">Stay connected</p><a href="https://x.com/BTOofficial" target="_blank" rel="noopener noreferrer">X / @BTOofficial ↗</a><a href="mailto:contact@bto.ng">Contact the official office ↗</a></div></div><div class="footer-bottom"><span>Independent profile · Nigeria</span><span>Photography & reporting credited to their original publishers.</span><a href="#main">Back to top ↑</a></div></div></footer><dialog id="menu-dialog" class="menu-dialog" aria-labelledby="menu-title"><div class="dialog-top"><span id="menu-title" class="eyebrow">Explore the record</span><button data-close aria-label="Close navigation">CLOSE <span>×</span></button></div><nav aria-label="Main navigation">${pages
+    )}<a href="https://bto.ng/" target="_blank" rel="noopener noreferrer">Official website ↗</a></div><div><p class="eyebrow">Stay connected</p>${channels.map(c => `<a href="${c.url}" target="_blank" rel="noopener noreferrer">${c.name} / ${esc(c.handle)} ↗</a>`).join("")}<a href="${url("connect")}">Contact & public services ↗</a></div></div><div class="footer-bottom"><span>Independent profile · Nigeria</span><span>Photography & reporting credited to their original publishers.</span><a href="#main">Back to top ↑</a></div></div></footer><dialog id="menu-dialog" class="menu-dialog" aria-labelledby="menu-title"><div class="dialog-top"><span id="menu-title" class="eyebrow">Explore the record</span><button data-close aria-label="Close navigation">CLOSE <span>×</span></button></div><nav aria-label="Main navigation">${pages
     .slice(0, 11)
     .map(
       ([p, t], i) =>

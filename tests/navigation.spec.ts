@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { pages } from "../src/editorial/render";
+import { testSiteUrl, testBase, previewUrl } from "./site-settings";
 
 test("every published page is readable without JavaScript and has working local links and assets", async ({
   browser,
@@ -10,13 +11,13 @@ test("every published page is readable without JavaScript and has working local 
   const assets = new Set<string>();
   for (const [route] of pages) {
     const response = await page.goto(
-      `http://127.0.0.1:4175/tunji-ojo/${route ? route + "/" : ""}`,
+      `${previewUrl}${route ? route + "/" : ""}`,
     );
     expect(response?.status()).toBe(200);
     await expect(page.locator("h1")).toBeVisible();
     await expect(page.locator("main")).toHaveAttribute("data-route", route);
     expect(await page.locator("link[rel=canonical]").getAttribute("href")).toBe(
-      `https://billioncodes001.github.io/tunji-ojo/${route ? route + "/" : ""}`,
+      `${testSiteUrl}${route ? route + "/" : ""}`,
     );
     expect(await page.locator("meta[name=description]").count()).toBe(1);
     expect(await page.locator('meta[property="og:description"]').count()).toBe(
@@ -38,7 +39,7 @@ test("every published page is readable without JavaScript and has working local 
       assets.add(src);
   }
   for (const src of assets) {
-    expect(src).toContain("/tunji-ojo/images/");
+    expect(src).toContain(`${testBase}images/`);
     expect((await request.get(src)).status(), src).toBe(200);
   }
   await context.close();

@@ -10,7 +10,7 @@ const route = decodeURIComponent(location.pathname)
   .replace(/^\/+|\/+$/g, "")
   .replace(/index\.html$/, "");
 const app = document.querySelector<HTMLDivElement>("#app")!;
-if (!app.querySelector("main")) app.innerHTML = renderPage(route, base);
+if (!app.querySelector("main")) app.innerHTML = renderPage(route, base, new URL(base, location.origin).href);
 initializeHero();
 const reduced = matchMedia("(prefers-reduced-motion: reduce)");
 const menu = document.querySelector<HTMLDialogElement>("#menu-dialog")!;

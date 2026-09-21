@@ -1,11 +1,12 @@
 import { defineConfig } from "@playwright/test";
+import { testSiteUrl, testBase, previewUrl } from "./tests/site-settings";
 
 export default defineConfig({
   testDir: "./tests",
   timeout: 30_000,
   workers: 2,
   use: {
-    baseURL: "http://127.0.0.1:4175/tunji-ojo/",
+    baseURL: previewUrl,
     launchOptions: {
       executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE,
     },
@@ -13,8 +14,9 @@ export default defineConfig({
   },
   webServer: {
     command:
-      "SITE_BASE=/tunji-ojo/ bun run build && SITE_BASE=/tunji-ojo/ bun run preview --host 127.0.0.1 --port 4175 --strictPort",
-    url: "http://127.0.0.1:4175/tunji-ojo/",
+      "bun run build && bun run preview --host 127.0.0.1 --port 4175 --strictPort",
+    url: previewUrl,
+    env: { SITE_URL: testSiteUrl, SITE_BASE: testBase },
     reuseExistingServer: false,
   },
 });
