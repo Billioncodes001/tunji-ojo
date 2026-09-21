@@ -1,13 +1,17 @@
 # Domain launch
 
-The production site remains at https://billioncodes001.github.io/tunji-ojo/ until a domain is purchased and connected. No domain has been purchased by this change.
+The user registered **olubunmitunjiojo.com** through Cloudflare on 21 September 2026. The production address is configured as https://olubunmitunjiojo.com/; www is configured to follow the apex through GitHub Pages.
 
-Cloudflare's public search on 21 September 2026 listed `olubunmitunjiojo.com` for USD 10.46 for one year and USD 10.46/year renewal, before any checkout taxes. Availability and final checkout pricing must be rechecked before payment. The registration flow was opened in a Chrome incognito window and requires the owner's Cloudflare sign-in. Domain choice, spending limit and registrant account are still needed.
+## Hosting configuration
 
-## Connection sequence after registration
+- Registrar and DNS: Cloudflare.
+- Hosting: GitHub Pages, repository `Billioncodes001/tunji-ojo`.
+- Pages custom domain: `olubunmitunjiojo.com`.
+- Actions variable `SITE_URL`: `https://olubunmitunjiojo.com/`.
+- Deployment automatically runs browser checks for both the GitHub project path and a root domain, then builds the configured production address.
+- All asset paths, canonical URLs, social images, structured data, sharing copy, robots.txt and sitemap derive from that address.
 
-1. Verify ownership in the GitHub account using the TXT record GitHub supplies. Save the registered hostname as this repository's Pages custom domain before adding hosting DNS records.
-2. In Cloudflare DNS, add these DNS-only records (leave unrelated records intact):
+Cloudflare DNS records (DNS only):
 
 | Type | Name | Target |
 | --- | --- | --- |
@@ -16,11 +20,9 @@ Cloudflare's public search on 21 September 2026 listed `olubunmitunjiojo.com` fo
 | A | @ | 185.199.110.153 |
 | A | @ | 185.199.111.153 |
 | CNAME | www | billioncodes001.github.io |
+| TXT | _github-pages-challenge-billioncodes001 | GitHub account verification record; retain it |
 
-3. Set the repository Actions variable `SITE_URL` to `https://REGISTERED-DOMAIN/`. Re-run the deployment. This updates asset paths, canonical metadata, Open Graph and Twitter image URLs, Person structured data, sharing copy, sitemap and robots.txt together.
-4. Check GitHub's DNS validation and certificate issuance, then enforce HTTPS. Verify both the apex and www hostname, redirects, all 16 routes, video playback, images and social-card metadata.
-
-GitHub Actions deployments use the Pages custom-domain setting, not a committed CNAME file. DNS and certificate issuance may take up to 24 hours. Do not announce the domain as live until HTTPS and page checks pass.
+GitHub Actions deployments use the Pages custom-domain setting rather than a committed CNAME file. After changing hosting or DNS, recheck certificate issuance and HTTPS enforcement, the apex and www redirect, all 16 routes, the video, and social-card metadata. DNS and certificate issuance can take up to 24 hours.
 
 References: [GitHub custom-domain documentation](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site), [Cloudflare Registrar](https://www.cloudflare.com/domains/).
 

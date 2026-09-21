@@ -2,7 +2,7 @@
 
 A source-linked editorial website covering Olubunmi Tunji-Ojo’s life and public record. This independent profile is not an official government website.
 
-[Live website](https://billioncodes001.github.io/tunji-ojo/) · [Deployment checks](https://github.com/Billioncodes001/tunji-ojo/actions)
+[Live website](https://olubunmitunjiojo.com/) · [Deployment checks](https://github.com/Billioncodes001/tunji-ojo/actions)
 
 ## The website
 
@@ -55,6 +55,6 @@ Tests build under `/tunji-ojo/` and cover all pages without JavaScript, direct r
 
 ## Deployment
 
-The existing GitHub Pages workflow tests and builds before deployment on pushes to `main`. Pull requests run checks without deploying. The `SITE_URL` repository variable controls the production address, including its path. It defaults to the current GitHub Pages URL. After registering and connecting a custom domain, set it to `https://your-domain/`; asset paths, canonical URLs, social cards, structured data, sharing text, robots.txt and sitemap update together. See `docs/launch/DOMAIN.md` for the launch sequence. Do not change the production address until domain ownership and DNS are ready.
+The existing GitHub Pages workflow tests and builds before deployment on pushes to `main`. Pull requests run checks without deploying. The `SITE_URL` repository variable controls the production address, including its path. It is set to `https://olubunmitunjiojo.com/`. For a future domain change, update this variable; asset paths, canonical URLs, social cards, structured data, sharing text, robots.txt and sitemap update together. See `docs/launch/DOMAIN.md` for the launch sequence. Do not change the production address until domain ownership and DNS are ready.
 
 All photographs and third-party packages retain their owners’ rights and licences. The letter represents its attributed authors’ assessment. The public record is dated editorial content, not live government-service data.
