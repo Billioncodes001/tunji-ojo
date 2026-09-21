@@ -1,6 +1,7 @@
 import "@fontsource-variable/oswald/index.css";
 import "@fontsource-variable/instrument-sans/index.css";
 import "./editorial/site.css";
+import { initializeHero } from "./editorial/hero";
 import { renderPage, esc } from "./editorial/render";
 import { photographs, films } from "./editorial/media";
 const base = import.meta.env.BASE_URL;
@@ -10,6 +11,7 @@ const route = decodeURIComponent(location.pathname)
   .replace(/index\.html$/, "");
 const app = document.querySelector<HTMLDivElement>("#app")!;
 if (!app.querySelector("main")) app.innerHTML = renderPage(route, base);
+initializeHero();
 const reduced = matchMedia("(prefers-reduced-motion: reduce)");
 const menu = document.querySelector<HTMLDialogElement>("#menu-dialog")!;
 const media = document.querySelector<HTMLDialogElement>("#media-dialog")!;
@@ -18,6 +20,7 @@ let opener: HTMLElement | null = null;
 function openDialog(dialog: HTMLDialogElement) {
   opener = document.activeElement as HTMLElement;
   dialog.showModal();
+  document.dispatchEvent(new Event("site:dialogchange"));
   document.body.classList.add("modal-open");
   dialog.querySelector<HTMLButtonElement>("[data-close]")?.focus();
 }
@@ -28,6 +31,7 @@ for (const dialog of [menu, media]) {
   dialog.addEventListener("close", () => {
     document.body.classList.remove("modal-open");
     if (dialog === media) mediaContent.replaceChildren();
+    document.dispatchEvent(new Event("site:dialogchange"));
     opener?.focus();
   });
 }
@@ -109,7 +113,7 @@ document
         `${visiblePhotos.length} photograph${visiblePhotos.length === 1 ? "" : "s"}`;
     }),
   );
-document.querySelectorAll<HTMLButtonElement>("[data-film]").forEach((b) =>
+document.querySelectorAll<HTMLElement>("[data-film]").forEach((b) =>
   b.addEventListener("click", () => {
     const f = films.find((f) => f.id === b.dataset.film)!;
     document.querySelector("#media-kind")!.textContent = "Watch & listen";

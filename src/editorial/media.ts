@@ -125,6 +125,17 @@ export const films: Film[] = [
     source:
       "https://www.channelstv.com/2023/11/28/99-done-tunji-ojo-vows-automated-passport-application-going-live-next-week/",
   },
+  {
+    id: "egates-inspection",
+    title: "At the border.",
+    description:
+      "TVC News follows Tunji-Ojo’s inspection of the electronic gates at Murtala Muhammed International Airport, Lagos. The homepage uses a short, silent excerpt from this report.",
+    date: "May 2024",
+    publisher: "TVC News Nigeria",
+    youtube: "joitS7ST3Pc",
+    poster: "bto-inspection-egates",
+    source: "https://www.youtube.com/watch?v=joitS7ST3Pc",
+  },
 ];
 
 export const photoById = (id: string): Photograph =>

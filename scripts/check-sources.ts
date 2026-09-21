@@ -24,6 +24,13 @@ for (const f of films) {
   if (!existsSync(`public/images/video-${f.id}.jpg`))
     errors.push(`Missing film poster: ${f.id}`);
 }
+for (const file of [
+  "public/media/tunji-ojo-egates-loop.webm",
+  "public/media/tunji-ojo-egates-loop.mp4",
+  "public/images/hero-film-poster.jpg",
+]) {
+  if (!existsSync(file)) errors.push(`Missing hero media: ${file}`);
+}
 if (errors.length) throw new Error(errors.join("\n"));
 console.log(
   `✓ ${facts.length} facts, ${imageCredits.length} original credits, ${photographs.length} gallery photographs and ${films.length} films have attribution; selected media files exist.`,

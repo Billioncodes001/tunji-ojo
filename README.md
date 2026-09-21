@@ -8,7 +8,7 @@ A source-linked editorial website covering Olubunmi Tunji-Ojo’s life and publi
 
 Fifteen prerendered pages cover the story, public office, Interior record, community, honours, media, quotations, official journal, the NANS Southwest letter, FAQ, press resources, sources, privacy and sharing. The interface uses bold condensed typography, dark and light editorial sections, expanding photo chapters, counters, a fullscreen menu and an accessible media gallery.
 
-The media archive contains 18 credited photographs and two Channels Television video embeds. Images and fonts are served locally; YouTube connects only when a visitor opens a film. Closing the player removes the embed. Each film provides links to the original recording and broadcaster’s reporting.
+The media archive contains 18 credited photographs and three video reports from Channels Television and TVC News. An approximately eight-second silent hero loop is served locally in WebM and MP4, with a pause control and a still-image fallback. Images and fonts are also local; YouTube connects only when a visitor opens a full report. Closing the player removes the embed. Each film provides links to the original recording and broadcaster’s reporting.
 
 ## Develop and build
 
@@ -28,12 +28,13 @@ The build checks source attribution, type-checks, bundles assets and prerenders 
 | `src/editorial/render.ts` | Shared page templates and route definitions |
 | `src/editorial/media.ts` | Selected photographs, new image credits and video provenance |
 | `src/editorial/site.css` | Responsive visual system and motion |
+| `src/editorial/hero.ts` | Preference-aware video loading, playback and pause lifecycle |
 | `src/main.ts` | Menu, media dialogs, filtering, copying and progressive animation |
 | `scripts/prerender.ts` | Static route pages, page metadata, sitemap and 404 page |
 | `scripts/check-sources.ts` | Attribution and local media checks |
 | `public/images/` | Original-sized assets, WebP derivatives and video thumbnails |
 | `research/reference-peterobi/ANALYSIS.md` | Reference study, page mapping and implementation decisions |
-| `tests/navigation.spec.ts` | Browser regression checks |
+| `tests/*.spec.ts` | Browser regression checks |
 
 Earlier rendering, motion and WebGL modules remain in the repository to preserve existing work; the redesigned entry point does not import them.
 
@@ -43,7 +44,7 @@ Edit the appropriate `src/content/` file, keeping the original source URL. Add s
 
 ## Accessibility and verification
 
-Native dialog focus containment, Escape dismissal and focus restoration support keyboard navigation. Gallery arrows and swipe work within the selected category. Reduced-motion preferences disable movement and counters. No preloader hides the record while scripts load.
+Native dialog focus containment, Escape dismissal and focus restoration support keyboard navigation. Gallery arrows and swipe work within the selected category. Reduced-motion and data-saving preferences prevent automatic hero downloads; visitors can explicitly play the film. Reduced motion disables other movement and counters. No preloader hides the record while scripts load.
 
 ```bash
 bunx playwright install chromium
