@@ -96,7 +96,7 @@ const chrome = () => `
   <div class="progress" aria-hidden="true"><i></i></div>
   <div class="chapmenu-wrap">
     <button class="chapmenu__btn" type="button" data-chapmenu-toggle aria-expanded="false" aria-controls="chapmenu"><span class="chapmenu__dot"></span><span data-chapmenu-label>Chapters</span></button>
-    <nav class="chapmenu" id="chapmenu" data-chapmenu hidden aria-label="Chapters">
+    <nav class="chapmenu" id="chapmenu" data-chapmenu data-lenis-prevent hidden aria-label="Chapters">
       <ol>
         ${chapters.map((c) => `<li><a href="#${c.id}" data-chap="${c.id}"><b>${c.numeral || '—'}</b><span>${esc(c.label)}</span></a></li>`).join('')}
       </ol>

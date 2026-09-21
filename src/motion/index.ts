@@ -5,21 +5,12 @@ import { splitWords } from './split';
 import { runPreloader } from './preloader';
 import { chapters } from '../render';
 import { initChapterMenu, setActiveChapter } from '../chapmenu';
+import { anchorTarget, initAnchorNavigation } from '../navigation';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const $ = <T extends Element = HTMLElement>(s: string, root: ParentNode = document) => root.querySelector<T>(s);
 const $$ = <T extends Element = HTMLElement>(s: string, root: ParentNode = document) => Array.from(root.querySelectorAll<T>(s));
-
-function anchorTarget(href: string | null): HTMLElement | null {
-  if (!href || !href.startsWith('#') || href.length < 2) return null;
-  try {
-    return $(href);
-  } catch (error: unknown) {
-    console.warn(`Invalid in-page anchor ${href}; retaining native navigation.`, error);
-    return null;
-  }
-}
 
 export function initMotion(): void {
   const lenis = new Lenis({ lerp: 0.085, smoothWheel: true, syncTouch: false });
@@ -27,28 +18,17 @@ export function initMotion(): void {
   gsap.ticker.add((time) => lenis.raf(time * 1000));
   gsap.ticker.lagSmoothing(0);
 
-  $$<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
-    a.addEventListener('click', (e) => {
-      const href = a.getAttribute('href');
-      const target = anchorTarget(href);
-      if (!target) return;
-      e.preventDefault();
-      // The 1.6-second scroll owns completion; interrupted scrolls deliberately do not move focus.
-      lenis.scrollTo(target, {
-        duration: 1.6, easing: (t) => 1 - Math.pow(1 - t, 4),
-        onComplete: () => {
-          if (target.tabIndex < 0 && !target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
-          target.focus({ preventScroll: true });
-          history.replaceState(history.state, '', href);
-        },
-      });
+  initChapterMenu();
+  initAnchorNavigation((target, complete) => {
+    lenis.scrollTo(target, {
+      duration: 1.6, force: true, easing: (t) => 1 - Math.pow(1 - t, 4),
+      onComplete: complete,
     });
   });
 
   // Start at the cover unless the visitor arrived with a chapter anchor.
   const anchor = anchorTarget(location.hash);
   lenis.stop();
-  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   if (!anchor) window.scrollTo(0, 0);
   const resume = (): void => {
     lenis.start();
@@ -65,7 +45,6 @@ export function initMotion(): void {
 
   // The pinned ministry ledger is created first (and refreshes first): every trigger below it must
   // account for the pin spacer, and ScrollTrigger only does that for triggers refreshed after the pin.
-  initChapterMenu((target) => lenis.scrollTo(target, { duration: 1.4, force: true, easing: (t) => 1 - Math.pow(1 - t, 4) }));
   ministryTrack();
   progress();
   rail();
@@ -76,6 +55,8 @@ export function initMotion(): void {
   educationTimeline();
   steps();
   counters();
+  // Expanding the letter changes the positions of sources and the page progress endpoint.
+  $$('details').forEach((details) => details.addEventListener('toggle', () => ScrollTrigger.refresh()));
   if (document.readyState === 'complete') ScrollTrigger.refresh();
   else window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
 }
@@ -211,32 +192,54 @@ function ministryTrack() {
   const pin = $('[data-ministry-pin]');
   const track = $('[data-ministry-track]');
   if (!pin || !track) return;
-  const mm = gsap.matchMedia();
-  // Runs after matchMedia has reverted the old context and installed the new one.
-  ScrollTrigger.addEventListener('matchMedia', () => ScrollTrigger.refresh());
-  mm.add('(min-width: 1001px)', () => {
-    const distance = (): number => Math.max(0, track.scrollWidth - window.innerWidth);
-    if (distance() === 0) return; // No overflow means no pin and no dead scroll.
-    const tween = gsap.to(track, {
-      x: () => -distance(),
-      ease: 'none',
-      scrollTrigger: {
-        trigger: pin,
-        start: 'top top',
-        end: () => `+=${distance() * 1.15}`,
-        pin: true,
-        refreshPriority: 1,
-        scrub: 0.6,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-      },
-    });
-    // Measure the pin before containerAnimation triggers read its scroll range.
-    tween.scrollTrigger?.refresh();
-    $$('.agency', track).forEach((panel) => {
-      gsap.fromTo(panel, { opacity: 0.35 }, { opacity: 1, ease: 'none', scrollTrigger: { trigger: panel, containerAnimation: tween, start: 'left 90%', end: 'left 55%', scrub: true, invalidateOnRefresh: true } });
-    });
-    // matchMedia owns teardown of the pin and every panel trigger in this context.
+  const section = pin.closest<HTMLElement>('.ministry');
+  if (!section) return;
+  let context: gsap.Context | undefined;
+  let resizeTimer: ReturnType<typeof setTimeout>;
+  const rebuild = (): void => {
+    context?.revert();
+    context = undefined;
+    section.classList.remove('ministry--horizontal');
+    if (window.innerWidth > 1000) {
+      // Measure the horizontal layout first. Tall panels must remain in normal flow.
+      section.classList.add('ministry--horizontal');
+      if (track.scrollHeight > window.innerHeight) section.classList.remove('ministry--horizontal');
+      else {
+        context = gsap.context(() => {
+          const distance = (): number => Math.max(0, track.scrollWidth - window.innerWidth);
+          if (distance() === 0) return;
+          gsap.to(track, {
+            x: () => -distance(),
+            ease: 'none',
+            scrollTrigger: {
+              trigger: pin,
+              start: 'top top',
+              end: () => `+=${distance() * 1.15}`,
+              pin: true,
+              refreshPriority: 1,
+              scrub: 0.6,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+            },
+          });
+        });
+      }
+    }
+    ScrollTrigger.refresh();
+  };
+  const resize = (): void => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(rebuild, 150);
+  };
+  rebuild();
+  // Fonts change panel height; remeasure after they settle as well as on viewport changes.
+  void document.fonts.ready.then(resize);
+  window.addEventListener('resize', resize);
+  if (import.meta.hot) import.meta.hot.dispose(() => {
+    clearTimeout(resizeTimer);
+    window.removeEventListener('resize', resize);
+    context?.revert();
+    section.classList.remove('ministry--horizontal');
   });
 }
 

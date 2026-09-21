@@ -1,0 +1,10 @@
+{
+  "pages": 84,
+  "unique_links": 538,
+  "exceptions": [
+    {
+      "link": "https://peterobi.online/testimonials.pdf",
+      "issue": "resource outside page sitemap"
+    }
+  ]
+}

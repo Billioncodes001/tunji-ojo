@@ -11,11 +11,11 @@
 /* ───────────── Progress + rail ───────────── */
 .progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 30; background: transparent; pointer-events: none; }
 .progress i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, var(--green), var(--gold)); transform-origin: 0 50%; transform: scaleX(0); }
-.rail { position: fixed; left: clamp(14px, 2vw, 30px); top: 50%; transform: translateY(-50%); z-index: 25; display: flex; flex-direction: column; gap: 13px; }
-.rail__item { display: flex; align-items: center; gap: 12px; color: var(--ink-3); text-decoration: none; font-family: var(--sans); font-weight: 600; font-size: 0.6rem; letter-spacing: 0.24em; text-transform: uppercase; transition: color 0.4s var(--ease-out); }
+.rail { position: fixed; left: clamp(6px, 1.2vw, 18px); top: 50%; transform: translateY(-50%); z-index: 25; display: flex; flex-direction: column; gap: 4px; }
+.rail__item { position: relative; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; color: var(--ink-3); text-decoration: none; font-family: var(--sans); font-weight: 600; font-size: 0.6rem; letter-spacing: 0.24em; text-transform: uppercase; transition: color 0.4s var(--ease-out); }
 .rail__dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex: none; transition: transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out), background 0.4s; }
-.rail__label { opacity: 0; transform: translateX(-6px); transition: opacity 0.35s var(--ease-out), transform 0.35s var(--ease-out); white-space: nowrap; }
-.rail:hover .rail__label, .rail__item.is-active .rail__label, .rail__item:focus-visible .rail__label { opacity: 1; transform: none; }
+.rail__label { position: absolute; left: 100%; top: 50%; padding: 6px 10px; background: var(--bg-2); border: 1px solid var(--line-2); color: var(--ink); opacity: 0; pointer-events: none; transform: translate(-6px, -50%); transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out); white-space: nowrap; }
+.rail__item:hover .rail__label, .rail__item:focus-visible .rail__label { opacity: 1; pointer-events: auto; transform: translate(0, -50%); }
 .rail__item.is-active { color: var(--gold-2); }
 .rail__item.is-active .rail__dot { background: var(--green); transform: scale(1.5); box-shadow: 0 0 0 5px rgba(31, 138, 76, 0.22); }
 .rail__item:hover { color: var(--ink); }
@@ -156,6 +156,11 @@
   .agency, .agency--intro { flex-basis: auto; grid-template-columns: 1fr; }
 }
 @media (max-width: 1200px) { .agency__items { grid-template-columns: 1fr; } }
+/* A horizontal ledger is enabled only after verifying every panel fits the viewport. */
+.ministry:not(.ministry--horizontal) .ministry__pin { min-height: 0; overflow: visible; display: block; }
+.ministry:not(.ministry--horizontal) .ministry__track { flex-direction: column; transform: none; gap: 56px; will-change: auto; }
+.ministry:not(.ministry--horizontal) .agency { flex-basis: auto; grid-template-columns: 1fr; }
+.ministry:not(.ministry--horizontal) .agency--intro { align-self: stretch; }
 
 /* ───────────── Numbers ───────────── */
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line-2); border-left: 1px solid var(--line-2); }
@@ -278,7 +283,7 @@ a.inline { color: var(--gold-2); text-decoration: none; border-bottom: 1px solid
 .fn a:hover::after, .fn a:focus-visible::after { opacity: 1; transform: translate(-50%, 0); }
 .chapmenu-wrap { display: none; }
 @media (max-width: 1000px) {
-  .chapmenu-wrap { display: block; position: fixed; left: 14px; bottom: 14px; z-index: 40; }
+  .chapmenu-wrap { display: block; position: fixed; left: max(14px, env(safe-area-inset-left)); bottom: max(14px, env(safe-area-inset-bottom)); z-index: 40; }
   .chapmenu__btn { display: inline-flex; align-items: center; gap: 10px; padding: 12px 16px 12px 14px; background: rgba(10, 10, 10, 0.86); border: 1px solid var(--gold-dim); color: var(--ink); font-family: var(--sans); font-weight: 600; font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase; cursor: pointer; backdrop-filter: blur(6px); }
   .chapmenu__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgba(31, 138, 76, 0.22); }
   .chapmenu { position: absolute; left: 0; bottom: calc(100% + 10px); width: min(78vw, 320px); max-height: 70vh; overflow: auto; background: rgba(10, 10, 10, 0.96); border: 1px solid var(--gold-dim); backdrop-filter: blur(8px); }
@@ -287,4 +292,5 @@ a.inline { color: var(--gold-2); text-decoration: none; border-bottom: 1px solid
   .chapmenu a b { font-family: var(--serif); font-weight: 300; font-size: 0.95rem; letter-spacing: 0; text-transform: none; color: var(--gold); }
   .chapmenu a.is-active { color: var(--gold-2); border-left-color: var(--green); }
   .chapter-tag { right: 14px; }
+  .footer { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
 }

@@ -1,5 +1,3 @@
-import { WebGLRenderer, Scene, OrthographicCamera, PlaneGeometry, Mesh, ShaderMaterial, Vector2 } from 'three';
-
 const vert = /* glsl */ `
   varying vec2 vUv;
   void main() { vUv = uv; gl_Position = vec4(position, 1.0); }
@@ -69,46 +67,174 @@ const frag = /* glsl */ `
 `;
 
 export function initObsidian(canvas: HTMLCanvasElement): boolean {
-  let renderer: WebGLRenderer;
+  let gl: WebGLRenderingContext;
   try {
-    renderer = new WebGLRenderer({ canvas, antialias: false, alpha: false, powerPreference: 'high-performance' });
+    const attributes: WebGLContextAttributes = {
+      alpha: false,
+      antialias: false,
+      depth: true,
+      stencil: false,
+      premultipliedAlpha: true,
+      preserveDrawingBuffer: false,
+      powerPreference: 'high-performance',
+      failIfMajorPerformanceCaveat: false,
+    };
+    const context = canvas.getContext('webgl', attributes)
+      ?? canvas.getContext('experimental-webgl', attributes);
+    if (!(context instanceof WebGLRenderingContext)) {
+      throw new Error('A WebGL context is unavailable.');
+    }
+    gl = context;
   } catch (error: unknown) {
     console.error('Obsidian WebGL initialisation failed; using the CSS surface.', error);
+    document.documentElement.classList.add('no-gl');
     return false;
   }
+
   const scale = 0.66; // render below native resolution: the surface is soft, the savings are large
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5) * scale);
-  renderer.setSize(window.innerWidth, window.innerHeight, false);
-
-  const scene = new Scene();
-  const camera = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
-  const uniforms = {
-    uTime: { value: 0 },
-    uRes: { value: new Vector2(renderer.domElement.width, renderer.domElement.height) },
-    uMouse: { value: new Vector2(0.35, 0.2) },
-    uScroll: { value: 0 },
-  };
-  const material = new ShaderMaterial({ vertexShader: vert, fragmentShader: frag, uniforms, depthTest: false, depthWrite: false });
-  const geometry = new PlaneGeometry(2, 2);
-  scene.add(new Mesh(geometry, material));
-
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const target = new Vector2(0.35, 0.2);
+  let vertexShader: WebGLShader | null = null;
+  let fragmentShader: WebGLShader | null = null;
+  let program: WebGLProgram | null = null;
+  let buffer: WebGLBuffer | null = null;
+  let uniforms: {
+    time: WebGLUniformLocation;
+    resolution: WebGLUniformLocation;
+    mouse: WebGLUniformLocation;
+    scroll: WebGLUniformLocation;
+  } | null = null;
+  let time = 0;
+  let mouseX = 0.35;
+  let mouseY = 0.2;
+  let targetX = 0.35;
+  let targetY = 0.2;
+  let scroll = 0;
   let frameId: number | null = null;
   let disposed = false;
+  let contextUnavailable = false;
   let last = performance.now();
+
+  function compileShader(shader: WebGLShader, source: string): void {
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      throw new Error('Obsidian shader compilation failed: ' + gl.getShaderInfoLog(shader));
+    }
+  }
+
+  function uniformLocation(linkedProgram: WebGLProgram, name: string): WebGLUniformLocation {
+    const location = gl.getUniformLocation(linkedProgram, name);
+    if (location === null) {
+      throw new Error('Obsidian shader is missing uniform ' + name + '.');
+    }
+    return location;
+  }
+
+  function sizeSurface(): void {
+    if (uniforms === null) {
+      throw new Error('Obsidian uniforms are unavailable.');
+    }
+    const pixelRatio = Math.min(window.devicePixelRatio, 1.5) * scale;
+    canvas.width = Math.floor(window.innerWidth * pixelRatio);
+    canvas.height = Math.floor(window.innerHeight * pixelRatio);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.uniform2f(uniforms.resolution, canvas.width, canvas.height);
+  }
+
+  function createResources(): void {
+    const precision = gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT);
+    const precisionPrologue = precision !== null && precision.precision > 0
+      ? 'precision highp float;'
+      : 'precision mediump float;';
+    vertexShader = gl.createShader(gl.VERTEX_SHADER);
+    if (vertexShader === null) throw new Error('Obsidian vertex shader allocation failed.');
+    compileShader(vertexShader, precisionPrologue + '\nattribute vec3 position;\nattribute vec2 uv;\n' + vert);
+    fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+    if (fragmentShader === null) throw new Error('Obsidian fragment shader allocation failed.');
+    // Keep the original GLSL intact; its first declaration is supplied by the precision prologue.
+    compileShader(fragmentShader, precisionPrologue + frag.slice(frag.indexOf(';') + 1));
+
+    program = gl.createProgram();
+    if (program === null) throw new Error('Obsidian program allocation failed.');
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    // Fixed slots also let us bind UVs when the unused varying is optimised away.
+    gl.bindAttribLocation(program, 0, 'position');
+    gl.bindAttribLocation(program, 1, 'uv');
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      throw new Error('Obsidian program linking failed: ' + gl.getProgramInfoLog(program));
+    }
+    gl.useProgram(program);
+    uniforms = {
+      time: uniformLocation(program, 'uTime'),
+      resolution: uniformLocation(program, 'uRes'),
+      mouse: uniformLocation(program, 'uMouse'),
+      scroll: uniformLocation(program, 'uScroll'),
+    };
+
+    buffer = gl.createBuffer();
+    if (buffer === null) throw new Error('Obsidian vertex buffer allocation failed.');
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      -1,  1, 0, 0, 1,
+      -1, -1, 0, 0, 0,
+       1,  1, 0, 1, 1,
+      -1, -1, 0, 0, 0,
+       1, -1, 0, 1, 0,
+       1,  1, 0, 1, 1,
+    ]), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
+    gl.enableVertexAttribArray(1);
+    gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+    gl.disable(gl.DEPTH_TEST);
+    gl.depthMask(false);
+    gl.disable(gl.BLEND);
+    gl.disable(gl.CULL_FACE);
+    // The opaque quad covers every pixel, so it does not need a separate clear.
+    sizeSurface();
+    const error = gl.getError();
+    if (error !== gl.NO_ERROR) throw new Error('Obsidian WebGL setup failed: ' + error);
+  }
+
+  function deleteResources(): void {
+    // After context loss these deletes are harmless; clear the handles before rebuilding.
+    if (program !== null) gl.deleteProgram(program);
+    if (vertexShader !== null) gl.deleteShader(vertexShader);
+    if (fragmentShader !== null) gl.deleteShader(fragmentShader);
+    if (buffer !== null) gl.deleteBuffer(buffer);
+    program = null;
+    vertexShader = null;
+    fragmentShader = null;
+    buffer = null;
+    uniforms = null;
+  }
+
   function pointerMoved(e: PointerEvent): void {
-    target.set((e.clientX / window.innerWidth - 0.5) * 2, -(e.clientY / window.innerHeight - 0.5) * 2);
+    targetX = (e.clientX / window.innerWidth - 0.5) * 2;
+    targetY = -(e.clientY / window.innerHeight - 0.5) * 2;
   }
+
   function resize(): void {
-    renderer.setSize(window.innerWidth, window.innerHeight, false);
-    uniforms.uRes.value.set(renderer.domElement.width, renderer.domElement.height);
+    // A restored context gets its current size when its resources are rebuilt.
+    if (disposed || contextUnavailable) return;
+    try {
+      sizeSurface();
+    } catch (error: unknown) {
+      console.error('Obsidian resizing failed; using the CSS surface.', error);
+      document.documentElement.classList.add('no-gl');
+      dispose();
+    }
   }
+
   function stop(): void {
     if (frameId !== null) cancelAnimationFrame(frameId);
     frameId = null;
   }
+
   function dispose(): void {
+    // Permanent teardown is idempotent; context loss keeps the restoration listener.
     if (disposed) return;
     disposed = true;
     stop();
@@ -116,19 +242,54 @@ export function initObsidian(canvas: HTMLCanvasElement): boolean {
     window.removeEventListener('resize', resize);
     document.removeEventListener('visibilitychange', visibilityChanged);
     canvas.removeEventListener('webglcontextlost', contextLost);
-    geometry.dispose();
-    material.dispose();
-    renderer.dispose();
+    canvas.removeEventListener('webglcontextrestored', contextRestored);
+    deleteResources();
   }
-  function contextLost(event: Event): void {
-    event.preventDefault();
+
+  function suspendForContextLoss(): void {
+    // A draw can detect the loss before its event is dispatched.
+    if (contextUnavailable) return;
+    contextUnavailable = true;
     console.error('Obsidian WebGL context lost; using the CSS surface.');
     document.documentElement.classList.add('no-gl');
-    dispose();
+    stop();
+    deleteResources();
   }
+
+  function contextLost(event: Event): void {
+    event.preventDefault();
+    suspendForContextLoss();
+  }
+
+  function contextRestored(): void {
+    // Ignore duplicate restoration notifications or a permanently disposed surface.
+    if (disposed || !contextUnavailable) return;
+    try {
+      createResources();
+    } catch (error: unknown) {
+      console.error('Obsidian WebGL restoration failed; using the CSS surface.', error);
+      document.documentElement.classList.add('no-gl');
+      deleteResources();
+      return;
+    }
+    contextUnavailable = false;
+    last = performance.now();
+    document.documentElement.classList.remove('no-gl');
+    if (reduced) {
+      // Replace the lost still frame without starting an animation.
+      render();
+    } else {
+      schedule();
+    }
+  }
+
   function schedule(): void {
-    if (!disposed && !document.hidden && frameId === null) frameId = requestAnimationFrame(frame);
+    // Hidden pages, lost contexts and an already pending frame need no new request.
+    if (!disposed && !contextUnavailable && !document.hidden && frameId === null) {
+      frameId = requestAnimationFrame(frame);
+    }
   }
+
   function visibilityChanged(): void {
     if (document.hidden) stop();
     else {
@@ -136,9 +297,24 @@ export function initObsidian(canvas: HTMLCanvasElement): boolean {
       schedule();
     }
   }
+
   function render(): boolean {
     try {
-      renderer.render(scene, camera);
+      if (gl.isContextLost()) {
+        suspendForContextLoss();
+        return false;
+      }
+      if (uniforms === null) throw new Error('Obsidian uniforms are unavailable.');
+      gl.uniform1f(uniforms.time, time);
+      gl.uniform2f(uniforms.mouse, mouseX, mouseY);
+      gl.uniform1f(uniforms.scroll, scroll);
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      // No per-frame gl.getError(): it forces a synchronous flush every frame, and after a
+      // successful setup the only failure a fixed draw call can hit is context loss.
+      if (gl.isContextLost()) {
+        suspendForContextLoss();
+        return false;
+      }
       return true;
     } catch (error: unknown) {
       console.error('Obsidian rendering failed; using the CSS surface.', error);
@@ -150,18 +326,31 @@ export function initObsidian(canvas: HTMLCanvasElement): boolean {
 
   function frame(now: number): void {
     frameId = null;
-    if (disposed || document.hidden) return;
+    // Visibility or context loss can change after a frame has been requested.
+    if (disposed || contextUnavailable || document.hidden) return;
     const dt = Math.min((now - last) / 1000, 0.05);
     last = now;
-    uniforms.uTime.value += dt;
-    uniforms.uMouse.value.lerp(target, 0.04);
-    uniforms.uScroll.value += ((window.scrollY / window.innerHeight) - uniforms.uScroll.value) * 0.06;
+    time += dt;
+    mouseX += (targetX - mouseX) * 0.04;
+    mouseY += (targetY - mouseY) * 0.04;
+    scroll += ((window.scrollY / window.innerHeight) - scroll) * 0.06;
     if (render()) schedule();
+    // A failed render has already stopped the loop and selected the CSS surface.
+  }
+
+  try {
+    createResources();
+  } catch (error: unknown) {
+    console.error('Obsidian WebGL initialisation failed; using the CSS surface.', error);
+    document.documentElement.classList.add('no-gl');
+    dispose();
+    return false;
   }
   canvas.addEventListener('webglcontextlost', contextLost);
+  canvas.addEventListener('webglcontextrestored', contextRestored);
   if (reduced) {
     // One frame only; CSS scales it on resize, with the sheen centred at this fixed time.
-    uniforms.uTime.value = 21;
+    time = 21;
     return render();
   }
   window.addEventListener('pointermove', pointerMoved, { passive: true });

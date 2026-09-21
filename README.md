@@ -1,50 +1,59 @@
-# Dr. Olubunmi Tunji-Ojo — Showcase
+# Olubunmi Tunji-Ojo — A Life in Service
 
-A static, scroll-driven record of Nigeria's Minister of Interior: origins, education, professional career, legislative years, and the ministerial record from August 2023 onward. Every fact carries a source URL; every image is stored locally and credited.
+A source-linked editorial website covering Olubunmi Tunji-Ojo’s life and public record. This independent profile is not an official government website.
 
-## Run
+[Live website](https://billioncodes001.github.io/tunji-ojo/) · [Deployment checks](https://github.com/Billioncodes001/tunji-ojo/actions)
+
+## The website
+
+Fifteen prerendered pages cover the story, public office, Interior record, community, honours, media, quotations, official journal, the NANS Southwest letter, FAQ, press resources, sources, privacy and sharing. The interface uses bold condensed typography, dark and light editorial sections, expanding photo chapters, counters, a fullscreen menu and an accessible media gallery.
+
+The media archive contains 18 credited photographs and two Channels Television video embeds. Images and fonts are served locally; YouTube connects only when a visitor opens a film. Closing the player removes the embed. Each film provides links to the original recording and broadcaster’s reporting.
+
+## Develop and build
 
 ```bash
-bun install
-bun run dev        # http://localhost:5173
-bun run build      # runs the source check + typecheck, then builds to dist/
-bun run preview    # serve the production build
+bun install --frozen-lockfile
+bun run dev
+bun run check
+bun run build
+bun run preview
 ```
 
-## Structure
+The build checks source attribution, type-checks, bundles assets and prerenders every route. Production content and navigation links work without JavaScript. Interactive media controls need JavaScript.
 
 | Path | Purpose |
 |---|---|
-| `src/content/*.ts` | All facts, dates, figures and quotes. Each entry has a required `source` URL. |
-| `src/content/letter.ts` | The vote-of-confidence letter. Add paragraphs and the signatory here. |
-| `src/content/images.ts` | Image credits rendered in the Sources chapter. |
-| `src/render.ts` | Builds the page from content; numbers footnotes in reading order. |
-| `src/gl/obsidian.ts` | Three.js fragment shader — the moving specular sheen behind the page. CSS fallback in `base.css`. |
-| `src/motion/` | Lenis smooth scroll + GSAP ScrollTrigger: preloader, hero intro, word reveals, figure wipes, parallax, education timeline, pinned horizontal ministry ledger, counters, chapter rail. |
-| `public/images/` | Optimised images (≤1800px). Originals and provenance in `research/images/MANIFEST.md`. |
-| `research/` | Fact-check reports with confidence ratings, and the image manifest. |
-| `scripts/check-sources.ts` | Fails the build if any fact or image credit lacks a source URL. |
+| `src/content/` | Sourced facts, chronologies, quotations and attributed letter |
+| `src/editorial/render.ts` | Shared page templates and route definitions |
+| `src/editorial/media.ts` | Selected photographs, new image credits and video provenance |
+| `src/editorial/site.css` | Responsive visual system and motion |
+| `src/main.ts` | Menu, media dialogs, filtering, copying and progressive animation |
+| `scripts/prerender.ts` | Static route pages, page metadata, sitemap and 404 page |
+| `scripts/check-sources.ts` | Attribution and local media checks |
+| `public/images/` | Original-sized assets, WebP derivatives and video thumbnails |
+| `research/reference-peterobi/ANALYSIS.md` | Reference study, page mapping and implementation decisions |
+| `tests/navigation.spec.ts` | Browser regression checks |
 
-## Updating content
+Earlier rendering, motion and WebGL modules remain in the repository to preserve existing work; the redesigned entry point does not import them.
 
-1. Edit the relevant file in `src/content/`. Keep `source` pointing at the page where the fact was verified.
-2. Run `bun run check`.
-3. For new images: place the optimised file in `public/images/`, add a credit in `src/content/images.ts`, and note provenance in `research/images/MANIFEST.md`.
+## Content updates
 
-## Accessibility
+Edit the appropriate `src/content/` file, keeping the original source URL. Add selected media and credits in `src/editorial/media.ts`, and place an optimized WebP at `public/images/optimized/<id>.webp`. Run `bun run check` and the browser checks. Source presence is not independent verification of a publisher’s claims or a guarantee that an external link remains available.
 
-`prefers-reduced-motion: reduce` disables smooth scrolling and all scroll animations; the page renders fully static. Native scrolling is never blocked.
+## Accessibility and verification
+
+Native dialog focus containment, Escape dismissal and focus restoration support keyboard navigation. Gallery arrows and swipe work within the selected category. Reduced-motion preferences disable movement and counters. No preloader hides the record while scripts load.
+
+```bash
+bunx playwright install chromium
+bun run test:e2e
+```
+
+Tests build under `/tunji-ojo/` and cover all pages without JavaScript, direct routes, page metadata, image paths, menu focus, gallery navigation, lazy video loading, mobile overflow, reduced motion, FAQs and the letter. To use an existing Chromium installation, set `PLAYWRIGHT_CHROMIUM_EXECUTABLE` to its executable path. Embedded-video tests mock the player to verify lifecycle and privacy; publisher playback must be checked separately.
 
 ## Deployment
 
-The site deploys to GitHub Pages on every push to `main` via `.github/workflows/deploy.yml` (bun install → `bun run build` with `SITE_BASE=/tunji-ojo/` → `actions/deploy-pages`).
+The existing GitHub Pages workflow tests and builds before deployment on pushes to `main`. Pull requests run checks without deploying. Set `SITE_BASE` for the hosting subpath. `SITE_ORIGIN` controls canonical metadata for another host; for a custom domain, also update the template’s social-image URLs and profile URL.
 
-Live: https://billioncodes001.github.io/tunji-ojo/
-
-Asset paths are base-aware: content stores `/images/…` and `src/render.ts` prefixes Vite's `BASE_URL`, so local dev serves from `/` and Pages from `/tunji-ojo/`.
-
-### Custom domain
-
-1. In the domain's DNS, add a `CNAME` record for the chosen host (e.g. `www`) pointing to `billioncodes001.github.io`; for an apex domain add the four GitHub Pages A records.
-2. Add a file `public/CNAME` containing the host name and change `SITE_BASE` in the workflow to `/`.
-3. In the repository's Pages settings, enter the custom domain and enable "Enforce HTTPS".
+All photographs and third-party packages retain their owners’ rights and licences. The letter represents its attributed authors’ assessment. The public record is dated editorial content, not live government-service data.

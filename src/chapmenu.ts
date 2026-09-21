@@ -1,7 +1,7 @@
 import { chapters } from './render';
 
 /** Mobile chapter menu: a button that opens the chapter list; closes on selection, Escape, or outside click. */
-export function initChapterMenu(scrollTo: (target: HTMLElement) => void): void {
+export function initChapterMenu(): void {
   const btn = document.querySelector<HTMLButtonElement>('[data-chapmenu-toggle]');
   const panel = document.querySelector<HTMLElement>('[data-chapmenu]');
   if (!btn || !panel) return;
@@ -10,18 +10,18 @@ export function initChapterMenu(scrollTo: (target: HTMLElement) => void): void {
     panel.hidden = !state;
     btn.setAttribute('aria-expanded', String(state));
     document.documentElement.classList.toggle('chapmenu-open', state);
-    if (state) items.find((i) => i.getAttribute('aria-current') === 'true')?.focus();
+    if (state) (items.find((i) => i.getAttribute('aria-current') === 'true') ?? items[0])?.focus();
+    else if (panel.contains(document.activeElement)) btn.focus();
   };
   btn.addEventListener('click', () => open(Boolean(panel.hidden)));
   items.forEach((a) => a.addEventListener('click', (e) => {
-    const target = document.getElementById(a.dataset.chap ?? '');
-    if (!target) return;
-    e.preventDefault();
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     open(false);
-    scrollTo(target);
   }));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !panel.hidden) { open(false); btn.focus(); } });
-  document.addEventListener('click', (e) => { if (!panel.hidden && !panel.contains(e.target as Node) && e.target !== btn) open(false); });
+  document.addEventListener('click', (e) => { if (!panel.hidden && !panel.contains(e.target as Node) && !btn.contains(e.target as Node)) open(false); });
+  document.addEventListener('focusin', (e) => { if (!panel.hidden && !panel.contains(e.target as Node) && !btn.contains(e.target as Node)) open(false); });
+  window.matchMedia('(min-width: 1001px)').addEventListener('change', (e) => { if (e.matches) open(false); });
 }
 
 /** Reflect the active chapter in the rail, the chapter tag, and the mobile menu. */

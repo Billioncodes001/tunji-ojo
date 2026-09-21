@@ -1,3 +1,10 @@
 node_modules
 dist
 .DS_Store
+test-results/
+playwright-report/
+# Local reference snapshots are research, not distributable site assets.
+research/reference-peterobi/*.html
+research/reference-peterobi/*.css
+research/reference-peterobi/*.js
+research/pre-redesign/

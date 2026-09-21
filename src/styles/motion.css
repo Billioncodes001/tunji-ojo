@@ -6,8 +6,6 @@ html.motion .figure { clip-path: inset(100% 0 0 0); }
 html.motion .figure img { will-change: transform; }
 html.motion .hero__figure { clip-path: inset(0 0 100% 0); }
 html.motion .hero__figure img { transform: scale(1.18); }
-html.motion .edu-entry { opacity: 0.6; }
-html.motion .edu-entry.is-active, html.motion .edu-entry.is-past { opacity: 1; }
 html.motion .edu__line i { height: 0; }
 html.motion .step::before { transform: scaleX(0); }
 html.motion .step.is-in::before { transform: scaleX(1); }
