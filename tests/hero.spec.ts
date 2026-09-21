@@ -19,6 +19,13 @@ test("hero plays a short muted local film and respects pause through dialogs", a
   expect(state.duration).toBeGreaterThan(5);
   expect(state.duration).toBeLessThan(10);
   expect(state.src).toContain("/tunji-ojo/media/tunji-ojo-egates-loop.");
+  const openPages = page.context().pages().length;
+  await page.getByRole("link", { name: "Watch the full report" }).click();
+  await expect(page.getByRole("dialog", { name: "At the border." })).toBeVisible();
+  expect(await video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
+  expect(page.context().pages()).toHaveLength(openPages);
+  await page.keyboard.press("Escape");
+  await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(false);
   await page
     .getByRole("button", { name: "Pause background video", exact: true })
     .click();

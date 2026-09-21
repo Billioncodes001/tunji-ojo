@@ -114,7 +114,8 @@ document
     }),
   );
 document.querySelectorAll<HTMLElement>("[data-film]").forEach((b) =>
-  b.addEventListener("click", () => {
+  b.addEventListener("click", (event) => {
+    event.preventDefault();
     const f = films.find((f) => f.id === b.dataset.film)!;
     document.querySelector("#media-kind")!.textContent = "Watch & listen";
     mediaContent.innerHTML = `<div class="media-layout"><div class="media-visual"><iframe class="video-frame" src="https://www.youtube-nocookie.com/embed/${f.youtube}?autoplay=1&rel=0" title="${esc(f.title)} — ${f.publisher}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div><div class="media-info"><p class="eyebrow">${f.publisher} · ${f.date}</p><h2 id="media-title">${f.title}</h2><p>${f.description}</p><p>Playback is provided by YouTube. If the embedded player is unavailable, open the original recording.</p><a class="text-link" href="https://www.youtube.com/watch?v=${f.youtube}" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a><a class="source" href="${f.source}" target="_blank" rel="noopener noreferrer">Original broadcast reporting ↗</a></div></div>`;
