@@ -77,3 +77,9 @@ Before a schema change, export D1 to a secure location using `wrangler d1 export
 ## Boundaries
 
 This is a complete CMS foundation for a publishing team. It does not claim the operational scale or staffing of TIME or Forbes. Scheduled publication, enterprise SSO, subscriptions and reader accounts are not enabled. Editors should publish when a story is ready; future publication dates are rejected. Credentials require at least 16 characters, login attempts are limited, and reset links expire. The owner still needs to choose their password. Recovery email inbox delivery must be confirmed during that onboarding; deployment alone does not verify delivery.
+
+## Worker password compatibility
+
+`worker.js` installs the scoped PBKDF2 compatibility adapter in `src/lib/workers-crypto.ts`. Workers native crypto rejects Payload 3.90’s 600,000 iterations. The adapter uses the locked RustCrypto PBKDF2 implementation compiled to WASM (see `crypto/README.md`) for exactly Payload’s SHA-256 / 600,000-iteration / 32-byte string-input format, preserving Node-compatible hashes and salt encoding. All other operations, including legacy password hashes, keep native crypto. Do not reduce the iteration count or change the stored hash prefix. CI compares both ordinary and Unicode passwords against Node crypto.
+
+On 22 September 2026 the live reset flow was checked with a temporary diagnostic account: minimum length, invalid token, successful reset, authenticated session, single-use token, fresh login and wrong-password rejection. The diagnostic account was removed afterward. The owner’s password remains private and is entered only by the owner.

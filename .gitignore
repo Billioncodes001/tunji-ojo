@@ -24,3 +24,6 @@ cms/media/
 cms/.owner-setup-url
 cms/.test-accounts.json
 cms/.remote.wrangler.json
+
+# Reproducible password WASM build intermediates
+cms/crypto/target/

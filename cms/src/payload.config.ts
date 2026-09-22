@@ -20,7 +20,7 @@ const cloudflare = process.env.CMS_BUILD === '1' ? { env: { D1: {}, R2: {} } } :
 const env = cloudflare.env as any
 const secret = process.env.PAYLOAD_SECRET || env.PAYLOAD_SECRET
 if (!secret) throw new Error('PAYLOAD_SECRET is required. See cms/.env.example.')
-const log = (level: string) => (obj: unknown, msg?: string) => console.log(JSON.stringify({ level, message: typeof obj === 'string' ? obj : msg || (obj as any)?.msg || (obj as any)?.message || 'CMS event' }))
+const log = (level: string) => (obj: unknown, msg?: string) => console.log(JSON.stringify({ level, message: typeof obj === 'string' ? obj : msg || (obj as any)?.msg || (obj as any)?.message || (obj as any)?.err?.message?.split('\n')[0] || 'CMS event' }))
 const logger = { level: 'info', trace: log('trace'), debug: log('debug'), info: log('info'), warn: log('warn'), error: log('error'), fatal: log('fatal'), silent() {} } as any
 export default buildConfig({
  serverURL: process.env.SITE_URL || 'https://olubunmitunjiojo.com',

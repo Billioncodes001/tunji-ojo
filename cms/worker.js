@@ -1,5 +1,10 @@
 import handler from './.open-next/worker.js'
+import crypto from 'node:crypto'
+import { createWorkersPbkdf2 } from './src/lib/workers-crypto.ts'
+import passwordKdf from './crypto/payload-pbkdf2.wasm'
 export { DOQueueHandler, DOShardedTagCache, BucketCachePurge } from './.open-next/worker.js'
+
+crypto.pbkdf2 = createWorkersPbkdf2(crypto.pbkdf2, passwordKdf)
 
 export default {
  async fetch(request, env, ctx) {
