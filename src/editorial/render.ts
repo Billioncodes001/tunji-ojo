@@ -1,3 +1,7 @@
+import { esc } from "./html";
+import { blogPosts, postRoute } from "./blog";
+import { blogPreview, renderBlog, renderArticle } from "./blog-render";
+import { renderJourney } from "./journey";
 import {
   identity,
   prologue,
@@ -53,16 +57,10 @@ export const pages = [
   ["privacy", "Privacy", "A small site. A clear approach to privacy."],
   ["share", "Pass it on", "Share the documented record."],
   ["connect", "Connect", "Social channels, official contacts and public services."],
+  ["blog", "Blog", "Original explainers on Olubunmi Tunji-Ojo, immigration and Nigeria’s Ministry of Interior, with dated sources and practical public-service links."],
 ] as const;
 export type PageKey = (typeof pages)[number][0];
-export const esc = (s: string) =>
-  s.replace(
-    /[&<>"']/g,
-    (c) =>
-      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
-        c
-      ]!,
-  );
+export { esc } from "./html";
 export function renderPage(route: string, base: string, siteUrl = "https://billioncodes001.github.io/tunji-ojo/") {
   const url = (p = "") => `${base}${p ? p + "/" : ""}`;
   const img = (id: string, cls = "", eager = false) => {
@@ -109,7 +107,11 @@ export function renderPage(route: string, base: string, siteUrl = "https://billi
     ["media", "In the frame", "06", "bto-inspection-egates"],
   ];
   let content = "";
+  const post = blogPosts.find(p => postRoute(p) === route);
   switch (route) {
+    case "blog":
+      content = renderBlog(base);
+      break;
     case "":
       content = `<section class="hero" aria-label="Olubunmi Tunji-Ojo, a life in service"><div class="hero-image"><img src="${base}images/hero-film-poster.jpg" alt="Tunji-Ojo inspecting the e-gates at Lagos airport, May 2024" width="1280" height="576" fetchpriority="high" decoding="async"></div><video class="hero-video" data-hero-video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" disablepictureinpicture><source data-src="${base}media/tunji-ojo-egates-loop.webm" type="video/webm"><source data-src="${base}media/tunji-ojo-egates-loop.mp4" type="video/mp4"></video><div class="hero-shade"></div><div class="hero-copy"><p class="eyebrow"><span class="live-dot"></span> Olubunmi Tunji-Ojo · Nigeria</p><h1>TUNJI<span>OJO.</span></h1><div class="hero-bottom"><p>A life in service.<br>A record in focus.</p><a class="circle-link" href="#introduction" aria-label="Explore the story">↓</a></div></div><div class="hero-film-bar"><a class="hero-watch" href="https://www.youtube.com/watch?v=joitS7ST3Pc" data-film="egates-inspection" aria-haspopup="dialog" target="_blank" rel="noopener noreferrer"><span class="film-dot" aria-hidden="true">▶</span> Watch the full report <span aria-hidden="true">↗</span></a><div class="hero-film-meta"><a href="https://www.youtube.com/watch?v=joitS7ST3Pc" target="_blank" rel="noopener noreferrer">Lagos, May 2024 · TVC News ↗</a><button class="hero-film-toggle" data-hero-toggle aria-label="Play background video" hidden><span class="playback-icon" aria-hidden="true"></span><span data-hero-control-label>Play film</span></button></div></div></section>
  <section class="paper section" id="introduction"><div class="wrap intro-grid"><div><p class="eyebrow">The person behind the office</p><h2 class="display reveal">ROOTED IN<br>AKOKO.<br><em>WORKING FOR<br>NIGERIA.</em></h2></div><div class="intro-copy reveal"><p class="lede">Engineer. Legislator.<br>Minister of Interior.</p><p>From Ondo State to the House of Representatives and the Ministry of Interior, explore the life, public service and documented record of Hon. (Dr.) Olubunmi Tunji-Ojo.</p>${source(identity[1])}${arrow("Meet Olubunmi", url("story"))}<div class="mini-portrait">${img("official-portrait")}<span>Olubunmi Tunji-Ojo<br><small>Honourable Minister of Interior</small></span></div></div></div></section>
@@ -118,6 +120,8 @@ export function renderPage(route: string, base: string, siteUrl = "https://billi
  <section class="section wrap"><div class="section-top"><div><p class="eyebrow">Watch & listen</p><h2 class="display">IN HIS<br>OWN WORDS.</h2></div>${arrow("Explore all media", url("media"))}</div><div class="film-grid">${filmCards()}</div></section>
  <section class="image-quote">${img("podium-speech")}<div class="wrap"><p class="eyebrow">A conviction, on the record</p><blockquote>“VISA IS A PRIVILEGE.<br>PASSPORT IS A RIGHT.”</blockquote><p>Olubunmi Tunji-Ojo · October 2023</p>${source(quotes[0])}</div></section>
  <section class="paper section"><div class="wrap"><div class="section-top"><div><p class="eyebrow">From the archive</p><h2 class="display">THE JOURNAL.</h2></div>${arrow("Read the archive", url("news"))}</div><div class="news-grid">${newsCards()}</div></div></section>
+ ${renderJourney(base)}
+ ${blogPreview(base)}
  <section class="section wrap letter-teaser"><p class="eyebrow">A student constituency’s perspective</p><h2 class="display reveal">A RECORD<br>THAT SPEAKS.</h2><div><p class="lede">A vote of confidence from NANS Southwest Zone D.</p><p>The letter that occasioned this documented record: an assessment of public service and its impact on students.</p>${arrow("Read the full letter", url("letter"))}</div></section>`;
       break;
     case "story":
@@ -282,6 +286,7 @@ export function renderPage(route: string, base: string, siteUrl = "https://billi
           .join(
             "",
           )}</div><h2>Photography</h2>${[...photographs, ...imageCredits.filter((c) => !photographs.some((p) => p.file === c.file)).map((c) => ({ ...c, title: c.description }))].map((p) => `<div class="fact"><h3>${esc(p.title)}</h3><p>${esc(p.credit)}</p><a class="source" href="${esc(p.source)}" target="_blank" rel="noopener noreferrer">Original photograph / reporting ↗</a></div>`).join("")}<h2>Films</h2>${films.map((f) => `<div class="fact"><h3>${f.title}</h3><p>${f.publisher} · ${f.date}</p><a class="source" href="${f.source}" target="_blank" rel="noopener noreferrer">Original broadcast reporting ↗</a></div>`).join("")}</section>`;
+      content += `<section id="editorial-policy" class="paper section"><div class="wrap reading"><p class="eyebrow">Blog / Editorial approach</p><h2>Context, with a clear source.</h2><p>Blog research notes are published by Olubunmi Tunji-Ojo — Independent Profile. They are not authored or approved by the minister or his office. Articles distinguish dated government statements from independently established outcomes and link to the documents they discuss.</p><p>The publication date belongs to our explainer; the period covered identifies the historical events. Photographs retain captions and original-source credits. Material corrections will be identified in the affected article, with its update date.</p><a class="text-link" href="${url("blog")}">Read the blog <span>↗</span></a></div></section>`;
       break;
     case "privacy":
       content =
@@ -306,6 +311,7 @@ export function renderPage(route: string, base: string, siteUrl = "https://billi
         `<section class="wrap reading bottom-space"><p id="share-message" class="lede">Explore the documented life and public service of Olubunmi Tunji-Ojo — from Akoko to the Ministry of Interior. ${esc(siteUrl)}</p><button class="text-link" data-copy="share-message">Copy message & link <span>↗</span></button>${arrow("Explore the story", url("story"))}</section>`;
       break;
     default:
+      if (post) { content = renderArticle(post, base, siteUrl); break; }
       content =
         head(
           "404 / Not found",
@@ -314,7 +320,7 @@ export function renderPage(route: string, base: string, siteUrl = "https://billi
         ) +
         `<div class="wrap bottom-space">${arrow("Return home", url())}</div>`;
   }
-  return `<a class="skip-link" href="#main">Skip to content</a><header class="site-header"><a class="brand" href="${url()}" aria-label="Olubunmi Tunji-Ojo home"><img src="${base}images/optimized/official-portrait-thumb.webp" width="32" height="32" alt=""><span>OLUBUNMI TUNJI-OJO</span></a><a class="header-record" href="${url("interior")}">A documented record <span class="live-dot"></span></a><button class="menu-toggle" aria-label="Open navigation" aria-haspopup="dialog" aria-controls="menu-dialog">MENU <span class="hamburger" aria-hidden="true"></span></button></header><main id="main" tabindex="-1" data-route="${esc(route)}">${content}</main><footer class="site-footer"><div class="wrap"><div class="footer-top"><a class="footer-name" href="${url()}">TUNJI OJO<span>↗</span></a><p>A life in service.<br>A record in focus.</p></div><div class="footer-links"><div><p class="eyebrow">Explore</p>${pages
+  return `<a class="skip-link" href="#main">Skip to content</a><header class="site-header"><a class="brand" href="${url()}" aria-label="Olubunmi Tunji-Ojo home"><img src="${base}images/optimized/official-portrait-thumb.webp" width="32" height="32" alt=""><span>OLUBUNMI TUNJI-OJO</span></a><nav class="header-links" aria-label="Quick navigation"><a href="${url("interior")}">The record</a><a href="${url("blog")}" ${route.startsWith("blog") ? 'aria-current="page"' : ""}>Blog <span class="live-dot"></span></a></nav><button class="menu-toggle" aria-label="Open navigation" aria-haspopup="dialog" aria-controls="menu-dialog">MENU <span class="hamburger" aria-hidden="true"></span></button></header><main id="main" tabindex="-1" data-route="${esc(route)}">${content}</main><footer class="site-footer"><div class="wrap"><div class="footer-top"><a class="footer-name" href="${url()}">TUNJI OJO<span>↗</span></a><p>A life in service.<br>A record in focus.</p></div><div class="footer-links"><div><p class="eyebrow">Explore</p>${pages
     .slice(1, 6)
     .map(([p, t]) => `<a href="${url(p)}">${t}</a>`)
     .join("")}</div><div><p class="eyebrow">The archive</p>${pages
@@ -326,13 +332,13 @@ export function renderPage(route: string, base: string, siteUrl = "https://billi
     .join(
       "",
     )}<a href="https://bto.ng/" target="_blank" rel="noopener noreferrer">Official website ↗</a></div><div><p class="eyebrow">Stay connected</p>${channels.map(c => `<a href="${c.url}" target="_blank" rel="noopener noreferrer">${c.name} / ${esc(c.handle)} ↗</a>`).join("")}<a href="${url("connect")}">Contact & public services ↗</a></div></div><div class="footer-bottom"><span>Independent profile · Nigeria</span><span>Photography & reporting credited to their original publishers.</span><a href="#main">Back to top ↑</a></div></div></footer><dialog id="menu-dialog" class="menu-dialog" aria-labelledby="menu-title"><div class="dialog-top"><span id="menu-title" class="eyebrow">Explore the record</span><button data-close aria-label="Close navigation">CLOSE <span>×</span></button></div><nav aria-label="Main navigation">${pages
-    .slice(0, 11)
+    .filter(([p], i) => i < 11 || p === "blog")
     .map(
       ([p, t], i) =>
         `<a href="${url(p)}" ${route === p ? 'aria-current="page"' : ""}><span class="menu-number">${String(i).padStart(2, "0")}</span>${t}<span class="menu-arrow">↗</span></a>`,
     )
     .join("")}</nav><div class="menu-bottom">${pages
-    .slice(11)
+    .slice(11).filter(([p]) => p !== "blog")
     .map(([p, t]) => `<a href="${url(p)}">${t}</a>`)
     .join(
       "",

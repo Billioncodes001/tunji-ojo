@@ -12,7 +12,8 @@ test("launch metadata, sharing and contact references use the configured site", 
   await expect(page.getByRole("link", { name: "Contact the official office" })).toHaveAttribute("href", officialContact);
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", `${testSiteUrl}images/share-card.jpg`);
   await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute("content", `${testSiteUrl}images/share-card.jpg`);
-  const person = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent())!);
+  const graph = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent())!);
+  const person = graph["@graph"].find((node: Record<string, unknown>) => node["@type"] === "Person");
   expect(person.url).toBe(testSiteUrl);
   expect(person.sameAs).toEqual(expect.arrayContaining(channels.map(c => c.url)));
   await page.goto("./share/");

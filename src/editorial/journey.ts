@@ -1,0 +1,13 @@
+import { legislator, callToServe } from '../content/career';
+import { blogPosts } from './blog';
+import { photoById } from './media';
+import { esc } from './html';
+export function renderJourney(base: string) {
+ const milestones = [
+  { year: '2019', title: 'The Green Chamber.', text: 'Elected to represent Akoko North-East and North-West in the House of Representatives.', image: 'house-of-reps', source: legislator[0].source, route: 'offices', label: 'Explore public office' },
+  { year: '2023', title: 'A national responsibility.', text: 'Sworn in as Minister of Interior on 21 August 2023, following his service in the House.', image: 'at-desk-2023', source: callToServe[4].source, route: 'interior', label: 'Explore the Interior years' },
+  { year: '2024', title: 'Technology at the border.', text: 'An inspection of e-verification gates at Abuja airport documented the installation stage of the programme.', image: 'bto-inspection-egates', source: blogPosts[0].sources[0].url, route: 'blog/tunji-ojo-airport-e-gates', label: 'Read the e-gates explainer' },
+  { year: '2025', title: 'From plans to operation.', text: 'An April government briefing reported the Lagos and Abuja airport e-gates as operational.', image: 'bto-public-service', source: blogPosts[0].sources[1].url, route: 'blog/tunji-ojo-airport-e-gates', label: 'Follow the public record' }
+ ];
+ return `<section class="section journey-section" aria-labelledby="journey-title"><div class="wrap"><div class="section-top"><div><p class="eyebrow">An evolving public record</p><h2 class="display" id="journey-title">YEARS OF<br><em>SERVICE.</em></h2></div><p class="muted">Four moments in the journey.<br>Select a year to explore.</p></div><nav class="journey-years" aria-label="Years of service">${milestones.map(m => `<a href="#year-${m.year}" data-year="${m.year}">${m.year}<span aria-hidden="true">↗</span></a>`).join('')}</nav><div class="journey-panels">${milestones.map(m => `<article id="year-${m.year}" class="journey-panel"><div class="journey-photo"><img src="${base}images/optimized/${m.image}.webp" alt="${esc(photoById(m.image).description)}" width="1600" height="1067" loading="lazy" decoding="async"><span class="journey-photo-note">From the photographic archive</span></div><div class="journey-copy"><span class="journey-year" aria-hidden="true">${m.year}</span><p class="eyebrow">${m.year} / A moment in the record</p><h3>${m.title}</h3><p>${m.text}</p><a class="source" href="${esc(m.source)}" target="_blank" rel="noopener noreferrer">Read the dated source ↗</a><a class="text-link" href="${base}${m.route}/">${m.label}<span>↗</span></a></div></article>`).join('')}</div></div></section>`;
+}

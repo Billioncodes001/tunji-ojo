@@ -1,3 +1,4 @@
+import { blogPosts } from "../src/editorial/blog";
 import { existsSync } from "node:fs";
 import { allFacts } from "../src/content/index";
 import { imageCredits } from "../src/content/images";
@@ -31,7 +32,20 @@ for (const file of [
 ]) {
   if (!existsSync(file)) errors.push(`Missing hero media: ${file}`);
 }
+const slugs = new Set<string>();
+for (const post of blogPosts) {
+  if (slugs.has(post.slug) || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(post.slug)) errors.push(`Invalid or duplicate blog slug: ${post.slug}`);
+  slugs.add(post.slug);
+  if (!post.sources.length || post.sources.some(source => !URL_RE.test(source.url))) errors.push(`Missing blog sources: ${post.slug}`);
+  if (!photographs.some(photo => photo.id === post.image)) errors.push(`Uncredited blog photograph: ${post.slug}`);
+  const sectionIds = new Set<string>();
+  for (const section of post.sections) {
+    if (sectionIds.has(section.id)) errors.push(`Duplicate article anchor: ${post.slug}#${section.id}`);
+    sectionIds.add(section.id);
+    if (section.sources?.some(index => !post.sources[index])) errors.push(`Broken article citation: ${post.slug}#${section.id}`);
+  }
+}
 if (errors.length) throw new Error(errors.join("\n"));
 console.log(
-  `✓ ${facts.length} facts, ${imageCredits.length} original credits, ${photographs.length} gallery photographs and ${films.length} films have attribution; selected media files exist.`,
+  `✓ ${facts.length} facts, ${imageCredits.length} original credits, ${photographs.length} gallery photographs and ${films.length} films and ${blogPosts.length} blog articles have attribution; selected media files exist.`,
 );

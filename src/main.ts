@@ -1,3 +1,4 @@
+import { initializeReading } from "./editorial/reading";
 import "@fontsource-variable/oswald/index.css";
 import "@fontsource-variable/instrument-sans/index.css";
 import "./editorial/site.css";
@@ -12,6 +13,7 @@ const route = decodeURIComponent(location.pathname)
 const app = document.querySelector<HTMLDivElement>("#app")!;
 if (!app.querySelector("main")) app.innerHTML = renderPage(route, base, new URL(base, location.origin).href);
 initializeHero();
+initializeReading();
 const reduced = matchMedia("(prefers-reduced-motion: reduce)");
 const menu = document.querySelector<HTMLDialogElement>("#menu-dialog")!;
 const media = document.querySelector<HTMLDialogElement>("#media-dialog")!;
