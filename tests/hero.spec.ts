@@ -15,14 +15,16 @@ test("hero plays a short muted local film and respects pause through dialogs", a
     inline: v.playsInline,
     duration: v.duration,
     src: v.currentSrc,
+    width: v.videoWidth,
+    height: v.videoHeight,
   }));
-  expect(state).toMatchObject({ muted: true, loop: true, inline: true });
+  expect(state).toMatchObject({ muted: true, loop: true, inline: true, width: 1920, height: 1080 });
   expect(state.duration).toBeGreaterThan(5);
   expect(state.duration).toBeLessThan(10);
-  expect(state.src).toContain(`${testBase}media/tunji-ojo-egates-loop.`);
+  expect(state.src).toContain(`${testBase}media/tunji-ojo-airport-hd.`);
   const openPages = page.context().pages().length;
-  await page.getByRole("link", { name: "Watch the full report" }).click();
-  await expect(page.getByRole("dialog", { name: "At the border." })).toBeVisible();
+  await page.getByRole("link", { name: "Watch the full film" }).click();
+  await expect(page.getByRole("dialog", { name: "A welcome to Nigeria." })).toBeVisible();
   expect(await video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
   expect(page.context().pages()).toHaveLength(openPages);
   await page.keyboard.press("Escape");
@@ -123,6 +125,22 @@ test("failed media retains the poster and the full-report link", async ({
   await expect(page.locator("[data-hero-toggle]")).toBeHidden();
   await expect(page.locator(".hero-image img")).toBeVisible();
   await expect(
-    page.getByRole("link", { name: "Watch the full report" }),
+    page.getByRole("link", { name: "Watch the full film" }),
   ).toBeVisible();
+});
+
+
+test("phones load only the portrait film at native resolution", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mediaRequests: string[] = [];
+  page.on("request", request => {
+    if (/\/media\/.*\.(mp4|webm)/.test(request.url())) mediaRequests.push(request.url());
+  });
+  await page.goto("./");
+  const video = page.locator("[data-hero-video]");
+  await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(0.15);
+  expect(await video.evaluate((v: HTMLVideoElement) => [v.videoWidth, v.videoHeight])).toEqual([720, 1080]);
+  expect(mediaRequests.length).toBeGreaterThan(0);
+  expect(mediaRequests.every(url => url.includes("tunji-ojo-airport-mobile."))).toBe(true);
+  expect(await page.locator(".hero-image img").evaluate((img: HTMLImageElement) => img.currentSrc)).toContain("hero-film-poster-mobile.jpg");
 });

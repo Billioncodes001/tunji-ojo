@@ -26,9 +26,12 @@ for (const f of films) {
     errors.push(`Missing film poster: ${f.id}`);
 }
 for (const file of [
-  "public/media/tunji-ojo-egates-loop.webm",
-  "public/media/tunji-ojo-egates-loop.mp4",
+  "public/media/tunji-ojo-airport-hd.webm",
+  "public/media/tunji-ojo-airport-hd.mp4",
   "public/images/hero-film-poster.jpg",
+  "public/images/hero-film-poster-mobile.jpg",
+  "public/media/tunji-ojo-airport-mobile.webm",
+  "public/media/tunji-ojo-airport-mobile.mp4",
 ]) {
   if (!existsSync(file)) errors.push(`Missing hero media: ${file}`);
 }

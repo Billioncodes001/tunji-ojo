@@ -8,7 +8,7 @@ A source-linked editorial website covering Olubunmi Tunji-Ojo’s life and publi
 
 Sixteen prerendered pages cover the story, public office, Interior record, community, honours, media, quotations, official journal, the NANS Southwest letter, FAQ, press resources, sources, privacy, sharing and contact channels. The interface uses bold condensed typography, dark and light editorial sections, expanding photo chapters, counters, a fullscreen menu and an accessible media gallery.
 
-The media archive contains 18 credited photographs and three video reports from Channels Television and TVC News. An approximately eight-second silent hero loop is served locally in WebM and MP4, with a pause control and a still-image fallback. Images and fonts are also local; YouTube connects only when a visitor opens a full report. Closing the player removes the embed. Each film provides links to the original recording and broadcaster’s reporting.
+The media archive contains 18 credited photographs and four films from Channels Television, TVC News and Olumide Mikel Pictures. An 8.5-second silent hero loop is served locally in WebM and MP4 at native 1920×1080 on desktop, with a separately framed 720×1080 portrait version for phones, with a pause control and a still-image fallback. Images and fonts are also local; YouTube connects only when a visitor opens a full report. Closing the player removes the embed. Each film provides links to the original recording and broadcaster’s reporting.
 
 ## Develop and build
 

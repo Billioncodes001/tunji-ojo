@@ -1,17 +1,23 @@
 # Hero film provenance and edit
 
-Source: TVC News Nigeria, “21 E-Gates At MMIA To Be Ready In 3 Weeks, Says Minister Of Interior”.
-Original recording: https://www.youtube.com/watch?v=joitS7ST3Pc
-Event: Tunji-Ojo inspecting electronic gates at Murtala Muhammed International Airport, Lagos, May 2024.
-Independent event context: https://www.arise.tv/interior-minister-tunji-ojo-inspects-new-e-gates-at-lagos-airport-promises-improved-efficiency/
+## Current HD film — 22 September 2026
 
-The hero is genuine footage, not a GIF or a generated animation. A short excerpt around 00:38–00:47 was visually inspected, reframed above the broadcast lower-third, stripped of its audio stream and edited into an approximately 8.4-second loop. A 0.6-second dissolve joins the tail to the head; the opening portion is rotated so the dissolve ends where the loop starts. The original broadcaster is credited beside the player and in the media/source archive. Rights remain with the broadcaster; attribution is not a claim of a licence.
+Source: Olumide Mikel Pictures (OMP), “Commissioning of the remodeled Arrival \"E\" area of the Murtala Muhammed International Airport”.
+Original film: https://www.youtube.com/watch?v=fMgmL2v1ZpY
+Published by OMP: 4 August 2025. The event itself took place in December 2023; the upload date is not the event date.
+Event corroboration and identifying photographs: https://nnpcgroup.com/insights/nnpc-ltd-snep-co-jv-commission-the-e-wing-of-the-murtala-mohammed-international-airport
 
-Deliverables:
-- `public/media/tunji-ojo-egates-loop.webm`: VP9, 1280×576, 24 fps, no audio.
-- `public/media/tunji-ojo-egates-loop.mp4`: H.264, 1280×576, 24 fps, no audio, fast-start metadata.
-- `public/images/hero-film-poster.jpg`: an actual frame of the footage, used while loading or when motion is disabled.
+Downloaded the 1920×1080 H.264 source (YouTube format 270). Visually reviewed the film and selected 65.5–71 seconds and 78–82 seconds. Joined these excerpts with a 0.5-second dissolve, then rotated the opening 0.5 seconds to the end and dissolved the loop seam. Final duration: 8.5 seconds at 24 fps, no audio stream. Desktop retains the native 1920×1080 frame, with no upscale or AI-generated detail. The film's small rounded black border is part of the source.
 
-The files are hosted with the site. No video platform, cookies or advertising is loaded for the background loop. The full report remains available through a separate, user-initiated YouTube embed.
+Desktop: `public/media/tunji-ojo-airport-hd.mp4` (H.264, CRF 18, slow preset, fast start) and `.webm` (VP9, CRF 24). The WebM is derived from the high-quality MP4.
+Mobile: `public/media/tunji-ojo-airport-mobile.mp4` and `.webm`, 720×1080. Each shot has a separate crop (x=640 and x=430) to keep the subject in the portrait frame; no pixels are enlarged. Only the appropriate desktop or mobile film is downloaded. The breakpoint is 650 CSS pixels, selected when playback first loads.
+Posters: `public/images/hero-film-poster.jpg`, `hero-film-poster-mobile.jpg`, and `video-airport-commissioning.jpg`, extracted from the new film.
 
-Playback is suspended offscreen, in background tabs and while a modal is open. Manual pause persists across these transitions. Reduced-motion, Save-Data and 2G preferences prevent automatic downloads; the user can explicitly choose Play film. Missing/unsupported media falls back to the still without hiding page content.
+The publisher is credited beside the hero, in the player and on the sources page. Rights remain with the filmmaker; attribution does not imply a licence. The full film opens only after a visitor chooses to watch it. No third-party player is used for the background loop.
+
+Reduced-motion, Save-Data and 2G preferences prevent automatic video downloads. The visitor can explicitly choose Play film. Playback pauses offscreen, in background tabs and while dialogs are open. Manual pause is preserved. Missing video falls back to the still image.
+
+## Previous film
+
+The previous TVC News e-gate inspection loop was cropped from a 1280×720 source to 1280×576 and ran at 24 fps. Enlarging it to cover the tall desktop hero made its compression more visible. That report remains credited and available in the media archive:
+https://www.youtube.com/watch?v=joitS7ST3Pc

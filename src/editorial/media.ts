@@ -102,6 +102,16 @@ export interface Film {
 }
 export const films: Film[] = [
   {
+    id: "airport-commissioning",
+    title: "A welcome to Nigeria.",
+    description: "An event film of the commissioning of the remodelled Arrival E at Lagos airport in December 2023. The homepage uses a short, silent excerpt. Film published by Olumide Mikel Pictures in August 2025.",
+    date: "December 2023",
+    publisher: "Olumide Mikel Pictures (OMP)",
+    youtube: "fMgmL2v1ZpY",
+    poster: "bto-inspection-egates",
+    source: "https://www.youtube.com/watch?v=fMgmL2v1ZpY",
+  },
+  {
     id: "passport-inspection",
     title: "Service, on the ground.",
     description:
@@ -129,7 +139,7 @@ export const films: Film[] = [
     id: "egates-inspection",
     title: "At the border.",
     description:
-      "TVC News follows Tunji-Ojo’s inspection of the electronic gates at Murtala Muhammed International Airport, Lagos. The homepage uses a short, silent excerpt from this report.",
+      "TVC News follows Tunji-Ojo’s inspection of the electronic gates at Murtala Muhammed International Airport, Lagos.",
     date: "May 2024",
     publisher: "TVC News Nigeria",
     youtube: "joitS7ST3Pc",

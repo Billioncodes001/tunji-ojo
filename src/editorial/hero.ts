@@ -52,7 +52,10 @@ export function initializeHero() {
     if (!loaded) {
       video
         .querySelectorAll<HTMLSourceElement>("source[data-src]")
-        .forEach((source) => (source.src = source.dataset.src!));
+        .forEach((source) => {
+          const portrait = matchMedia("(max-width: 650px)").matches;
+          source.src = (portrait && source.dataset.mobileSrc) || source.dataset.src!;
+        });
       video.load();
       loaded = true;
     }
