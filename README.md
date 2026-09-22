@@ -42,6 +42,14 @@ Earlier rendering, motion and WebGL modules remain in the repository to preserve
 
 Edit the appropriate `src/content/` file, keeping the original source URL. Add selected media and credits in `src/editorial/media.ts`, and place an optimized WebP at `public/images/optimized/<id>.webp`. Run `bun run check` and the browser checks. Source presence is not independent verification of a publisher’s claims or a guarantee that an external link remains available.
 
+## Publishing platform
+
+The `cms/` application adds Payload CMS, a server-rendered journal, searchable topic and author archives, staff accounts, draft review, revision history and a credited media library. Seven sourced articles are included. Administrators manage the publishing team; editors publish; writers prepare their own drafts. Reader registration is disabled.
+
+See [the newsroom guide](cms/README.md) for setup, publishing, permission tests, database migrations and recovery. Run `bun run cms:build` to prepare the Cloudflare Worker, or `bun run cms:dev` after local setup. The root Vite build remains the static fallback.
+
+Deployment status, 22 September 2026: the production domain now serves the Cloudflare Worker. D1 stores seven published articles and the publishing-team accounts; R2 stores uploads. The journal is at `/blog/` and the newsroom is at `/admin/`. The previous GitHub Pages build remains available as an origin fallback. Account email uses the verified newsroom sending subdomain; inbox delivery must be confirmed during owner onboarding.
+
 ## Accessibility and verification
 
 Native dialog focus containment, Escape dismissal and focus restoration support keyboard navigation. Gallery arrows and swipe work within the selected category. Reduced-motion and data-saving preferences prevent automatic hero downloads; visitors can explicitly play the film. Reduced motion disables other movement and counters. No preloader hides the record while scripts load.
@@ -55,6 +63,6 @@ Tests build under `/tunji-ojo/` and cover all pages without JavaScript, direct r
 
 ## Deployment
 
-The existing GitHub Pages workflow tests and builds before deployment on pushes to `main`. Pull requests run checks without deploying. The `SITE_URL` repository variable controls the production address, including its path. It is set to `https://olubunmitunjiojo.com/`. For a future domain change, update this variable; asset paths, canonical URLs, social cards, structured data, sharing text, robots.txt and sitemap update together. See `docs/launch/DOMAIN.md` for the launch sequence. Do not change the production address until domain ownership and DNS are ready.
+The Cloudflare Worker is the production application. Deploy application-code changes with the commands in `cms/README.md`; publishing articles in the CMS takes effect immediately. `check-cms.yml` validates the Worker build without production credentials. The existing GitHub Pages workflow continues to test and build the static fallback on pushes to `main`. Pull requests run checks without deploying. The `SITE_URL` repository variable controls the production address, including its path. It is set to `https://olubunmitunjiojo.com/`. For a future domain change, update this variable; asset paths, canonical URLs, social cards, structured data, sharing text, robots.txt and sitemap update together. See `docs/launch/DOMAIN.md` for the launch sequence. Do not change the production address until domain ownership and DNS are ready.
 
 All photographs and third-party packages retain their owners’ rights and licences. The letter represents its attributed authors’ assessment. The public record is dated editorial content, not live government-service data.

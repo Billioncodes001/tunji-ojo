@@ -1,0 +1,51 @@
+{
+  "name": "tunji-ojo-newsroom",
+  "version": "1.0.0",
+  "description": "The Tunji-Ojo Journal publishing platform",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "CMS_BUILD=1 next build --webpack",
+    "build:worker": "opennextjs-cloudflare build",
+    "deploy": "opennextjs-cloudflare deploy",
+    "payload": "payload",
+    "generate:types": "payload generate:types",
+    "generate:importmap": "payload generate:importmap",
+    "check": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts",
+    "prepare:assets": "bun scripts/prepare-assets.ts",
+    "db:migrate": "NODE_ENV=production node --import tsx node_modules/payload/bin.js migrate",
+    "db:migrate:remote": "bun scripts/remote-config.ts && CMS_REMOTE=1 NODE_ENV=production node --import tsx node_modules/payload/bin.js migrate",
+    "seed": "node --import tsx scripts/seed.ts",
+    "test:setup": "node --import tsx scripts/setup-tests.ts",
+    "test:clean": "node --import tsx scripts/clean-tests.ts"
+  },
+  "dependencies": {
+    "@opennextjs/cloudflare": "^1.11.0",
+    "@payloadcms/db-d1-sqlite": "3.90.1",
+    "@payloadcms/db-sqlite": "3.90.1",
+    "@payloadcms/next": "3.90.1",
+    "@payloadcms/richtext-lexical": "3.90.1",
+    "@payloadcms/storage-r2": "3.90.1",
+    "@payloadcms/ui": "3.90.1",
+    "cross-env": "10.1.0",
+    "dotenv": "16.4.7",
+    "graphql": "^16.8.1",
+    "next": "16.3.3",
+    "payload": "3.90.1",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "devDependencies": {
+    "@types/node": "24.12.3",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "tsx": "4.22.4",
+    "typescript": "6.0.3",
+    "wrangler": "~4.116.0"
+  },
+  "engines": {
+    "node": ">=22.17.0"
+  }
+}

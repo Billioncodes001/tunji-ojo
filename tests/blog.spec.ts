@@ -5,15 +5,16 @@ import { testSiteUrl } from './site-settings';
 
 test('blog search and topic filters combine and recover from empty results', async ({ page }) => {
  await page.goto('./blog/');
- await expect(page.locator('[data-blog-card]:visible')).toHaveCount(3);
+ await expect(page.locator('[data-blog-card]:visible')).toHaveCount(blogPosts.length);
  await page.getByRole('button', { name: 'Immigration', exact: true }).click();
+ await expect(page.locator('[data-blog-card]:visible')).toHaveCount(blogPosts.filter(p => p.category === 'Immigration').length);
+ await page.getByRole('searchbox', { name: 'Find a story' }).fill('airport e-gates');
  await expect(page.locator('[data-blog-card]:visible')).toHaveCount(1);
- await expect(page.locator('[data-blog-card]:visible')).toContainText('airport e-gates');
  await page.getByRole('searchbox', { name: 'Find a story' }).fill('no-match');
  await expect(page.getByRole('heading', { name: 'No stories found.' })).toBeVisible();
  await expect(page.locator('#blog-status')).toHaveText('0 articles');
  await page.getByRole('button', { name: 'Clear search & filters' }).click();
- await expect(page.locator('[data-blog-card]:visible')).toHaveCount(3);
+ await expect(page.locator('[data-blog-card]:visible')).toHaveCount(blogPosts.length);
  await page.getByRole('searchbox', { name: 'Find a story' }).fill('accountability');
  await expect(page.locator('[data-blog-card]:visible')).toHaveCount(1);
  await page.locator('[data-blog-card]:visible a').click();
@@ -43,7 +44,7 @@ test('articles are complete without JavaScript and expose consistent search meta
   expect(feed).toContain(`<link>${testSiteUrl}${route}</link>`);
  }
  await page.goto(new URL('blog/', base).href);
- await expect(page.locator('[data-blog-card]')).toHaveCount(3);
+ await expect(page.locator('[data-blog-card]')).toHaveCount(blogPosts.length);
  await expect(page.locator('[data-blog-tools]')).toBeHidden();
  await context.close();
 });

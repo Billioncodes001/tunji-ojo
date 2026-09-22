@@ -1,0 +1,2 @@
+export function Logo(){return <div style={{fontFamily:'sans-serif',textAlign:'center',padding:'16px 0'}}><div style={{fontSize:30,fontWeight:700,letterSpacing:-1}}>TUNJI OJO<span style={{color:'#70966f'}}> ↗</span></div><div style={{fontSize:10,letterSpacing:4,marginTop:8}}>THE NEWSROOM</div></div>}
+export function Icon(){return <span style={{fontFamily:'sans-serif',fontWeight:800,fontSize:17}}>TO<span style={{color:'#70966f'}}>↗</span></span>}

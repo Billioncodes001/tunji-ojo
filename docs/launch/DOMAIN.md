@@ -36,3 +36,12 @@ Checked on 21 September 2026:
 - Official contact destination: `https://bto.ng/contact/`, linked by the official website. The former unsupported `contact@bto.ng` address was removed.
 
 The website retains its existing independent-profile description until its official status is established. Third-party photographs and video retain their existing publisher attribution and provenance.
+
+
+## Publishing platform cutover — 22 September 2026
+
+The site now runs on the `tunji-ojo-newsroom` Cloudflare Worker, with routes for `olubunmitunjiojo.com/*` and `www.olubunmitunjiojo.com/*`. All four existing apex A records and the www CNAME are now proxied. Their origin values remain the GitHub Pages values above. Google and GitHub verification TXT records were preserved. Email-service records are confined to the `newsroom` subdomain.
+
+The Worker serves 31 indexable routes from the public site and CMS, including seven articles, six topics and the editorial author archive. It redirects www to the HTTPS apex. Administration, API, draft-preview and search-result pages are excluded from indexing. Workers.dev is also noindex.
+
+For an emergency static rollback, remove the two Worker routes or set the website A/CNAME records back to DNS-only. The old static site then serves from GitHub Pages; CMS-only archives and live CMS edits will not exist in that fallback. Restore the Worker routes and proxy settings to recover the publishing platform. Never delete D1 or R2 as part of a code rollback. See `cms/README.md` for migrations, backups and deployment.

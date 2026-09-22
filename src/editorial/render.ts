@@ -1,5 +1,5 @@
 import { esc } from "./html";
-import { blogPosts, postRoute } from "./blog";
+import { blogPosts, postRoute, type BlogPost } from "./blog";
 import { blogPreview, renderBlog, renderArticle } from "./blog-render";
 import { renderJourney } from "./journey";
 import {
@@ -61,7 +61,7 @@ export const pages = [
 ] as const;
 export type PageKey = (typeof pages)[number][0];
 export { esc } from "./html";
-export function renderPage(route: string, base: string, siteUrl = "https://billioncodes001.github.io/tunji-ojo/") {
+export function renderPage(route: string, base: string, siteUrl = "https://olubunmitunjiojo.com/", posts: BlogPost[] = blogPosts, customContent?: string) {
   const url = (p = "") => `${base}${p ? p + "/" : ""}`;
   const img = (id: string, cls = "", eager = false) => {
     const p = photoById(id);
@@ -107,10 +107,10 @@ export function renderPage(route: string, base: string, siteUrl = "https://billi
     ["media", "In the frame", "06", "bto-inspection-egates"],
   ];
   let content = "";
-  const post = blogPosts.find(p => postRoute(p) === route);
+  const post = posts.find(p => postRoute(p) === route);
   switch (route) {
     case "blog":
-      content = renderBlog(base);
+      content = renderBlog(base, posts);
       break;
     case "":
       content = `<section class="hero" aria-label="Olubunmi Tunji-Ojo, a life in service"><div class="hero-image"><picture><source media="(max-width: 650px)" srcset="${base}images/hero-film-poster-mobile.jpg"><img src="${base}images/hero-film-poster.jpg" alt="Tunji-Ojo at the commissioning of Arrival E at Lagos airport, December 2023" width="1920" height="1080" fetchpriority="high" decoding="async"></picture></div><video class="hero-video" data-hero-video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" disablepictureinpicture><source data-src="${base}media/tunji-ojo-airport-hd.webm" data-mobile-src="${base}media/tunji-ojo-airport-mobile.webm" type="video/webm"><source data-src="${base}media/tunji-ojo-airport-hd.mp4" data-mobile-src="${base}media/tunji-ojo-airport-mobile.mp4" type="video/mp4"></video><div class="hero-shade"></div><div class="hero-copy"><p class="eyebrow"><span class="live-dot"></span> Olubunmi Tunji-Ojo · Nigeria</p><h1>TUNJI<span>OJO.</span></h1><div class="hero-bottom"><p>A life in service.<br>A record in focus.</p><a class="circle-link" href="#introduction" aria-label="Explore the story">↓</a></div></div><div class="hero-film-bar"><a class="hero-watch" href="https://www.youtube.com/watch?v=fMgmL2v1ZpY" data-film="airport-commissioning" aria-haspopup="dialog" target="_blank" rel="noopener noreferrer"><span class="film-dot" aria-hidden="true">▶</span> Watch the full film <span aria-hidden="true">↗</span></a><div class="hero-film-meta"><a href="https://www.youtube.com/watch?v=fMgmL2v1ZpY" target="_blank" rel="noopener noreferrer">Lagos, December 2023 · OMP ↗</a><button class="hero-film-toggle" data-hero-toggle aria-label="Play background video" hidden><span class="playback-icon" aria-hidden="true"></span><span data-hero-control-label>Play film</span></button></div></div></section>
@@ -121,7 +121,7 @@ export function renderPage(route: string, base: string, siteUrl = "https://billi
  <section class="image-quote">${img("podium-speech")}<div class="wrap"><p class="eyebrow">A conviction, on the record</p><blockquote>“VISA IS A PRIVILEGE.<br>PASSPORT IS A RIGHT.”</blockquote><p>Olubunmi Tunji-Ojo · October 2023</p>${source(quotes[0])}</div></section>
  <section class="paper section"><div class="wrap"><div class="section-top"><div><p class="eyebrow">From the archive</p><h2 class="display">THE JOURNAL.</h2></div>${arrow("Read the archive", url("news"))}</div><div class="news-grid">${newsCards()}</div></div></section>
  ${renderJourney(base)}
- ${blogPreview(base)}
+ ${blogPreview(base, posts)}
  <section class="section wrap letter-teaser"><p class="eyebrow">A student constituency’s perspective</p><h2 class="display reveal">A RECORD<br>THAT SPEAKS.</h2><div><p class="lede">A vote of confidence from NANS Southwest Zone D.</p><p>The letter that occasioned this documented record: an assessment of public service and its impact on students.</p>${arrow("Read the full letter", url("letter"))}</div></section>`;
       break;
     case "story":
@@ -295,7 +295,7 @@ export function renderPage(route: string, base: string, siteUrl = "https://billi
           "YOUR VISIT.<br>YOUR CHOICE.",
           "How this website handles your visit.",
         ) +
-        `<section class="wrap reading bottom-space"><h2>No accounts. No forms.</h2><p>This site does not ask you to create an account or submit personal details. It does not include advertising or analytics scripts, and it does not set application cookies.</p><h2>The background film</h2><p>The short, silent homepage film is served directly from this website. It does not connect to a video platform. Reduced-motion or data-saving preferences keep the still image until you choose to play.</p><h2>Full reports load when you choose.</h2><p>YouTube videos use the privacy-enhanced youtube-nocookie.com player. A connection to YouTube is made only when you open a film. Playback is then subject to YouTube’s privacy practices.</p><h2>Fonts and photographs</h2><p>Fonts and displayed photographs are served with this website. Opening a source link takes you to a separate publisher with its own privacy policy.</p><h2>Hosting</h2><p>The published site uses GitHub Pages. The hosting provider may process technical information such as IP addresses to deliver and secure the site.</p>${arrow("GitHub privacy statement", "https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement")}<h2>Sharing</h2><p>Copy buttons write the selected text to your clipboard when you choose to use them. Nothing is posted or sent automatically.</p></section>`;
+        `<section class="wrap reading bottom-space"><h2>Reading without an account</h2><p>Articles and public pages are available without registration. This site does not use advertising or analytics scripts.</p><h2>Publishing-team accounts</h2><p>Administrators, editors and writers sign in to a private newsroom. We store their names, email addresses, roles, encrypted password hashes and editorial revisions to operate the publication. Essential session cookies support sign-in, and account emails support password recovery. Accounts can be disabled by the administrator; article attribution and revision history are retained.</p><h2>The background film</h2><p>The short, silent homepage film is served directly from this website. It does not connect to a video platform. Reduced-motion or data-saving preferences keep the still image until you choose to play.</p><h2>Full reports load when you choose.</h2><p>YouTube videos use the privacy-enhanced youtube-nocookie.com player. A connection to YouTube is made only when you open a film. Playback is then subject to YouTube’s privacy practices.</p><h2>Fonts and photographs</h2><p>Fonts and displayed photographs are served with this website. Opening a source link takes you to a separate publisher with its own privacy policy.</p><h2>Hosting</h2><p>The publishing platform uses Cloudflare for hosting, its database, uploaded media and account email. The hosting provider may process technical information such as IP addresses and error logs to deliver and secure the site.</p>${arrow("Cloudflare privacy policy", "https://www.cloudflare.com/privacypolicy/")}<h2>Sharing</h2><p>Copy buttons write the selected text to your clipboard when you choose to use them. Nothing is posted or sent automatically.</p></section>`;
       break;
     case "connect":
       content = head("15 / Stay connected", "THE CONVERSATION.<br>CONTINUES.", "Follow the public channels. Find the right place to get in touch.") +
@@ -311,7 +311,8 @@ export function renderPage(route: string, base: string, siteUrl = "https://billi
         `<section class="wrap reading bottom-space"><p id="share-message" class="lede">Explore the documented life and public service of Olubunmi Tunji-Ojo — from Akoko to the Ministry of Interior. ${esc(siteUrl)}</p><button class="text-link" data-copy="share-message">Copy message & link <span>↗</span></button>${arrow("Explore the story", url("story"))}</section>`;
       break;
     default:
-      if (post) { content = renderArticle(post, base, siteUrl); break; }
+      if (customContent) { content = customContent; break; }
+      if (post) { content = renderArticle(post, base, siteUrl, posts); break; }
       content =
         head(
           "404 / Not found",
@@ -320,6 +321,7 @@ export function renderPage(route: string, base: string, siteUrl = "https://billi
         ) +
         `<div class="wrap bottom-space">${arrow("Return home", url())}</div>`;
   }
+  content = customContent ?? content;
   return `<a class="skip-link" href="#main">Skip to content</a><header class="site-header"><a class="brand" href="${url()}" aria-label="Olubunmi Tunji-Ojo home"><img src="${base}images/optimized/official-portrait-thumb.webp" width="32" height="32" alt=""><span>OLUBUNMI TUNJI-OJO</span></a><nav class="header-links" aria-label="Quick navigation"><a href="${url("interior")}">The record</a><a href="${url("blog")}" ${route.startsWith("blog") ? 'aria-current="page"' : ""}>Blog <span class="live-dot"></span></a></nav><button class="menu-toggle" aria-label="Open navigation" aria-haspopup="dialog" aria-controls="menu-dialog">MENU <span class="hamburger" aria-hidden="true"></span></button></header><main id="main" tabindex="-1" data-route="${esc(route)}">${content}</main><footer class="site-footer"><div class="wrap"><div class="footer-top"><a class="footer-name" href="${url()}">TUNJI OJO<span>↗</span></a><p>A life in service.<br>A record in focus.</p></div><div class="footer-links"><div><p class="eyebrow">Explore</p>${pages
     .slice(1, 6)
     .map(([p, t]) => `<a href="${url(p)}">${t}</a>`)

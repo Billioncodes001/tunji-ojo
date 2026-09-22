@@ -1,0 +1,33 @@
+name: Check publishing platform
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cms-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SITE_URL: https://olubunmitunjiojo.com
+      # Build-time placeholder only. Production uses a private Worker secret.
+      PAYLOAD_SECRET: ci-build-placeholder-not-a-production-credential
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.2.19'
+      - run: bun install --frozen-lockfile
+      - run: bun install --frozen-lockfile
+        working-directory: cms
+      - run: bun run cms:build
+      - run: bun run check
+        working-directory: cms

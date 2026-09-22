@@ -1,19 +1,25 @@
+import { features } from './articles';
 export interface BlogPost {
   slug: string;
   title: string;
   excerpt: string;
   category: string;
   image: string;
+  cover?: { url: string; description: string; credit: string; source: string };
+  author?: { name: string; slug: string; bio: string };
+  updatedAt?: string;
+  correction?: string;
   date: string;
   period: string;
   takeaway: string;
-  sections: { id: string; title: string; paragraphs: string[]; sources?: number[] }[];
+  sections: { id: string; title: string; paragraphs: string[]; html?: string; sources?: number[] }[];
   sources: { title: string; url: string; date: string }[];
   relatedPage: { route: string; title: string };
 }
 
 // Publication dates belong to these original research notes, not to the historical events.
 export const blogPosts: BlogPost[] = [
+  ...features,
   {
     slug: 'tunji-ojo-airport-e-gates',
     title: 'Nigeria’s airport e-gates: from installation to operation',

@@ -8,3 +8,19 @@ research/reference-peterobi/*.html
 research/reference-peterobi/*.css
 research/reference-peterobi/*.js
 research/pre-redesign/
+
+# Publishing platform local state and generated assets
+cms/.next/
+cms/.open-next/
+cms/.wrangler/
+cms/.env*
+!cms/.env.example
+cms/.dev.vars*
+cms/*.db*
+cms/*.tsbuildinfo
+cms/public/
+cms/src/generated/
+cms/media/
+cms/.owner-setup-url
+cms/.test-accounts.json
+cms/.remote.wrangler.json

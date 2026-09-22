@@ -1,0 +1,21 @@
+{
+ "$schema": "node_modules/wrangler/config-schema.json",
+ "name": "tunji-ojo-newsroom",
+ "account_id": "40687c1a299192a1ba3add80961e429f",
+ "main": "worker.js",
+ "workers_dev": true,
+ "preview_urls": false,
+ "routes": [
+  {"pattern":"olubunmitunjiojo.com/*", "zone_name":"olubunmitunjiojo.com"},
+  {"pattern":"www.olubunmitunjiojo.com/*", "zone_name":"olubunmitunjiojo.com"}
+ ],
+ "compatibility_date": "2026-09-01",
+ "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+ "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+ "d1_databases": [{ "binding": "D1", "database_name": "tunji-ojo-newsroom", "database_id": "0c20de95-c70a-49b7-9352-7e07d02c63d2" }],
+ "r2_buckets": [{ "binding": "R2", "bucket_name": "tunji-ojo-newsroom-media" }],
+ "send_email": [{"name":"EMAIL", "allowed_sender_addresses":["accounts@newsroom.olubunmitunjiojo.com"]}],
+ "vars": { "SITE_URL": "https://olubunmitunjiojo.com" },
+ "limits": { "cpu_ms": 30000 },
+ "observability": { "enabled": true, "head_sampling_rate": 0.05 }
+}
