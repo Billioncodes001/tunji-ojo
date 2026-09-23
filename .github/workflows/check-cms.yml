@@ -31,5 +31,5 @@ jobs:
       - run: bun run cms:build
       - run: bun run check
         working-directory: cms
-      - run: node --import tsx --test tests/workers-crypto.test.ts
+      - run: node --import tsx --test tests/workers-crypto.test.ts tests/telegram.test.ts
         working-directory: cms

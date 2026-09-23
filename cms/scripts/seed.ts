@@ -22,9 +22,11 @@ const author=authors.docs[0]||await payload.create({collection:'authors',data:{n
 const richText=(paragraphs:string[])=>({root:{type:'root',version:1,format:'' as const,indent:0,direction:null,children:paragraphs.map(text=>({type:'paragraph',version:1,format:'',indent:0,direction:null,children:[{type:'text',version:1,text,format:0,detail:0,mode:'normal',style:''}]}))}})
 let added=0
 for(const post of blogPosts) {
+ if(post.slug===process.env.SKIP_ARTICLE_SLUG) continue
  const found=await payload.find({collection:'posts',where:{slug:{equals:post.slug}},limit:1})
  if(found.totalDocs) continue
- await payload.create({collection:'posts',data:{title:post.title,slug:post.slug,excerpt:post.excerpt,category:categories.get(post.category)!,author:author.id,owner:owner.id,archiveImage:post.image as any,period:post.period,takeaway:post.takeaway,sections:post.sections.map(s=>({heading:s.title,anchor:s.id,body:richText(s.paragraphs),references:s.sources?.map(i=>({sourceNumber:i+1}))})),sources:post.sources,relatedPage:post.relatedPage as any,publishedAt:post.date+'T12:00:00.000Z',_status:'published',reviewStage:'approved'}})
+ const created=await payload.create({collection:'posts',data:{title:post.title,slug:post.slug,excerpt:post.excerpt,category:categories.get(post.category)!,author:author.id,owner:owner.id,archiveImage:post.image as any,period:post.period,takeaway:post.takeaway,sections:post.sections.map(s=>({heading:s.title,anchor:s.id,body:richText(s.paragraphs),references:s.sources?.map(i=>({sourceNumber:i+1}))})),sources:post.sources,relatedPage:post.relatedPage as any,publishedAt:new Date(Math.min(Date.parse(post.date+'T12:00:00.000Z'),Date.now())).toISOString(),_status:'draft',reviewStage:'in-review'}})
+ await payload.update({collection:'posts',id:created.id,data:{_status:'published',reviewStage:'approved'}})
  added++
 }
 if(process.env.CREATE_OWNER_SETUP==='1') {

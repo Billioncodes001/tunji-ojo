@@ -23,6 +23,7 @@ export const Users: CollectionConfig = {
  },
  fields: [
   { name: 'name', type: 'text', required: true },
+  { name: 'telegramUserId', type: 'text', unique: true, index: true, access: { read: adminField, create: adminField, update: adminField }, validate: (value: unknown) => !value || (typeof value === 'string' && /^[1-9][0-9]{0,15}$/.test(value)) || 'Enter the numeric Telegram ID from /whoami.', hooks: { beforeValidate: [({ value }) => typeof value === 'string' ? value.trim() || null : value] }, admin: { description: 'Optional. Link the numeric ID shown by @TunjiOjoJournalBot /whoami. Their CMS role controls bot access; disabling this account revokes it immediately.' } },
   { name: 'role', type: 'select', required: true, defaultValue: 'writer', options: [{ label: 'Administrator', value: 'admin' }, { label: 'Editor', value: 'editor' }, { label: 'Writer', value: 'writer' }], access: { create: adminField, update: adminField } },
   { name: 'active', type: 'checkbox', defaultValue: true, access: { create: adminField, update: adminField }, admin: { description: 'Disable access without deleting attribution or editorial history.' } },
  ],

@@ -64,7 +64,7 @@ Resources:
 - R2: `tunji-ojo-newsroom-media` (no public bucket endpoint)
 - Account emails: `accounts@newsroom.olubunmitunjiojo.com`, via Cloudflare Email Service
 
-The Workers paid plan and R2 already exist in the account. No plan upgrade was purchased. Production contains seven source articles and one owner account. No local test accounts are seeded remotely.
+The Workers paid plan and R2 already exist in the account. No plan upgrade was purchased. The journal seed contains fifteen sourced articles. Production uses one owner account plus any staff added by the owner. No local test accounts are seeded remotely.
 
 Deployed on 22 September 2026 after the owner explicitly approved the Wrangler permission expansion. All 31 sitemap routes returned HTTP 200. Public staff and revision endpoints and account registration returned 403; published API responses omitted private editorial fields. The `/admin/login/` page renders successfully. Apex and www traffic now reaches the Worker through proxied DNS records. The Worker redirects www to the HTTPS apex while preserving the path and query; its workers.dev address is excluded from indexing. Version preview URLs are disabled.
 
@@ -76,10 +76,16 @@ Before a schema change, export D1 to a secure location using `wrangler d1 export
 
 ## Boundaries
 
-This is a complete CMS foundation for a publishing team. It does not claim the operational scale or staffing of TIME or Forbes. Scheduled publication, enterprise SSO, subscriptions and reader accounts are not enabled. Editors should publish when a story is ready; future publication dates are rejected. Credentials require at least 16 characters, login attempts are limited, and reset links expire. The owner still needs to choose their password. Recovery email inbox delivery must be confirmed during that onboarding; deployment alone does not verify delivery.
+This is a complete CMS foundation for a publishing team. It does not claim the operational scale or staffing of TIME or Forbes. Scheduled publication, enterprise SSO, subscriptions and reader accounts are not enabled. Editors should publish when a story is ready; future publication dates are rejected. Credentials require at least 16 characters, login attempts are limited, and reset links expire. The owner has confirmed password setup. Deployment alone does not verify recovery email inbox delivery.
 
 ## Worker password compatibility
 
 `worker.js` installs the scoped PBKDF2 compatibility adapter in `src/lib/workers-crypto.ts`. Workers native crypto rejects Payload 3.90’s 600,000 iterations. The adapter uses the locked RustCrypto PBKDF2 implementation compiled to WASM (see `crypto/README.md`) for exactly Payload’s SHA-256 / 600,000-iteration / 32-byte string-input format, preserving Node-compatible hashes and salt encoding. All other operations, including legacy password hashes, keep native crypto. Do not reduce the iteration count or change the stored hash prefix. CI compares both ordinary and Unicode passwords against Node crypto.
 
 On 22 September 2026 the live reset flow was checked with a temporary diagnostic account: minimum length, invalid token, successful reset, authenticated session, single-use token, fresh login and wrong-password rejection. The diagnostic account was removed afterward. The owner’s password remains private and is entered only by the owner.
+
+## Telegram publishing
+
+See [the Telegram publishing guide](docs/telegram-publishing.md) for account linking, the article format, drafts, permissions and deployment. The bot is [@TunjiOjoJournalBot](https://t.me/TunjiOjoJournalBot). `SKIP_ARTICLE_SLUG` can omit one article from the idempotent seed when that article will be submitted through Telegram. The local integration check is `node --import tsx scripts/test-telegram-local.ts` after test-account setup.
+
+On 23 September 2026, eight additional sourced articles brought the live journal to fifteen stories. The owner’s Telegram account was linked to the administrator account and a real article was submitted from the Mac Telegram app, published through the authenticated webhook, and confirmed by its bot receipt and public page. The live sitemap and RSS include all new articles. New image attachments were verified against local Payload/R2 with their credits and cover relationship; archive-image publication was verified end to end in production. Telegram parser/access/retry tests, the CMS integration suite, TypeScript checks and the production build passed. Production Worker version: `f9495dca-a132-44ec-80bc-15448ae8909e`.

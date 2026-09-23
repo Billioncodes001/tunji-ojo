@@ -1,4 +1,5 @@
 import { features } from './articles';
+import { journalExpansion } from './journal-expansion';
 export interface BlogPost {
   slug: string;
   title: string;
@@ -19,6 +20,7 @@ export interface BlogPost {
 
 // Publication dates belong to these original research notes, not to the historical events.
 export const blogPosts: BlogPost[] = [
+  ...journalExpansion,
   ...features,
   {
     slug: 'tunji-ojo-airport-e-gates',

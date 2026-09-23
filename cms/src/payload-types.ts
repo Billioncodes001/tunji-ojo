@@ -131,6 +131,10 @@ export interface Post {
   id: number;
   updatedBy?: (number | null) | User;
   title: string;
+  /**
+   * Telegram delivery reference. Prevents duplicate articles when delivery is retried.
+   */
+  telegramSubmissionId?: string | null;
   slug: string;
   /**
    * The story summary used on cards and in search results.
@@ -233,6 +237,10 @@ export interface Post {
 export interface User {
   id: number;
   name: string;
+  /**
+   * Optional. Link the numeric ID shown by @TunjiOjoJournalBot /whoami. Their CMS role controls bot access; disabling this account revokes it immediately.
+   */
+  telegramUserId?: string | null;
   role: 'admin' | 'editor' | 'writer';
   /**
    * Disable access without deleting attribution or editorial history.
@@ -400,6 +408,7 @@ export interface PayloadMigration {
 export interface PostsSelect<T extends boolean = true> {
   updatedBy?: T;
   title?: T;
+  telegramSubmissionId?: T;
   slug?: T;
   excerpt?: T;
   category?: T;
@@ -494,6 +503,7 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  telegramUserId?: T;
   role?: T;
   active?: T;
   updatedAt?: T;

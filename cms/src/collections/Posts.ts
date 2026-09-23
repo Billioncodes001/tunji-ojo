@@ -16,6 +16,7 @@ export const Posts: CollectionConfig = {
    data.owner = req.user!.id
   }
   if (req.user) data.updatedBy = req.user.id
+  if (operation === 'create' && typeof req.context.telegramSubmissionId === 'string') data.telegramSubmissionId = req.context.telegramSubmissionId
   if (operation === 'create' && !data.owner && req.user) data.owner = req.user.id
   if (originalDoc?._status === 'published' && data.slug && data.slug !== originalDoc.slug) throw new APIError('Published URLs are permanent. Keep this slug to preserve incoming links.', 400)
   if (data._status === 'published') {
@@ -34,6 +35,7 @@ export const Posts: CollectionConfig = {
   { name: '_status', type: 'select', options: ['draft','published'], defaultValue: 'draft', access: { create: ({ req }) => isEditor(req.user), update: ({ req }) => isEditor(req.user) }, admin: { position: 'sidebar' } },
   { name: 'updatedBy', type: 'relationship', relationTo: 'users', access: { read: staffField, create: () => false, update: () => false }, admin: { readOnly: true, position: 'sidebar' } },
   { name: 'title', type: 'text', required: true, maxLength: 160 },
+  { name: 'telegramSubmissionId', type: 'text', unique: true, index: true, access: { read: staffField, create: () => false, update: () => false }, admin: { readOnly: true, position: 'sidebar', description: 'Telegram delivery reference. Prevents duplicate articles when delivery is retried.' } },
   { name: 'slug', type: 'text', required: true, unique: true, index: true, validate: (v: unknown) => typeof v === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v) || 'Use lowercase words separated by hyphens.' },
   { name: 'excerpt', type: 'textarea', required: true, maxLength: 320, admin: { description: 'The story summary used on cards and in search results.' } },
   { type: 'row', fields: [
